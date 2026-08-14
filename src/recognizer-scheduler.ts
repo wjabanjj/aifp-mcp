@@ -29,11 +29,11 @@ let running = false
 export function startScheduler(): void {
   if (pollTimer) return
   if (!config.recognizerEnabled) {
-    console.log('[Recognizer] 未启用（设置 COGNITION_RECOGNIZER=1 启用）')
+    console.error('[Recognizer] 未启用（设置 COGNITION_RECOGNIZER=1 启用）')
     return
   }
 
-  console.log(`[Recognizer] 调度器已启动（轮询间隔 ${config.recognizerPollMs}ms）`)
+  console.error(`[Recognizer] 调度器已启动（轮询间隔 ${config.recognizerPollMs}ms）`)
   pollTimer = setInterval(pollQueue, config.recognizerPollMs)
   pollTimer.unref()
 
@@ -91,7 +91,7 @@ async function pollQueue(): Promise<void> {
       .filter(Boolean)
     if (noiseIds.length > 0) {
       markQueueSkipped(noiseIds)
-      console.log(`[Recognizer] 跳过 ${noiseIds.length} 条工具/系统通知噪音`)
+      console.error(`[Recognizer] 跳过 ${noiseIds.length} 条工具/系统通知噪音`)
     }
     const realTurns = turns.filter(t => !(t.userMessage && isToolNoise(t.userMessage)))
     const realIds = batchIds.filter(id => !noiseIds.includes(id))
@@ -101,17 +101,17 @@ async function pollQueue(): Promise<void> {
       return
     }
 
-    console.log(`[Recognizer] 处理 ${realTurns.length} 条待识别（等待 ${elapsed}ms）`)
+    console.error(`[Recognizer] 处理 ${realTurns.length} 条待识别（等待 ${elapsed}ms）`)
 
     // 运行识别（仅非噪音 turn）
     const written = await runRecognizerBatch(realTurns)
 
     if (written.length > 0) {
       markQueueDone(realIds)
-      console.log(`[Recognizer] ✅ 完成：写入 ${written.length} 条记忆`)
+      console.error(`[Recognizer] ✅ 完成：写入 ${written.length} 条记忆`)
     } else {
       markQueueSkipped(realIds)
-      console.log(`[Recognizer] 跳过：无值得保存的内容`)
+      console.error(`[Recognizer] 跳过：无值得保存的内容`)
     }
 
     // 清理旧数据

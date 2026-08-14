@@ -146,7 +146,7 @@ export function evaluateConfidence(
   ).run(nextConfidence, newEvidence, newObsCount, Date.now(), memId)
 
   if (promoted) {
-    console.log(`[置信度] ${memId.slice(0, 8)}… ${currentConfidence} → ${nextConfidence}`)
+    console.error(`[置信度] ${memId.slice(0, 8)}… ${currentConfidence} → ${nextConfidence}`)
   }
 
   return { promoted, from: currentConfidence, to: nextConfidence }
