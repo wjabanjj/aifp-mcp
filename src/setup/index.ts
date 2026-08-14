@@ -61,7 +61,8 @@ export function configureAll(opts: { silent?: boolean; rules?: boolean } = {}): 
     console.log(`server: ${server.command} ${server.args.join(' ')}\n`)
     for (const r of results) {
       const mark = r.status === 'ok' ? '✓' : r.status === 'exists' ? '·' : r.status === 'error' ? '✗' : '-'
-      console.log(`  ${mark} ${r.name.padEnd(14)} ${r.detail ?? r.status}`)
+      const label = r.status === 'ok' ? '已配置' : r.status === 'exists' ? '已存在，跳过' : r.status === 'error' ? '失败' : '需手动配置'
+      console.log(`  ${mark} ${r.name.padEnd(14)} ${label}${r.detail ? ' — ' + r.detail : ''}`)
     }
     if (rulesInjected.length) console.log(`\n✓ 已注入启动规则: ${rulesInjected.join(', ')}`)
     console.log('\n识别器可选配置（启用自动记忆识别）：')

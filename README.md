@@ -22,6 +22,14 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 
 Restart Claude Code and you're done. Data lives in `~/.ai-cognition/data/cognition.db`.
 
+### Install from any AI assistant's chat
+
+You don't need to configure anything manually. In Claude Code, Codex, Cursor, DeepSeek Harness, or any other tool, just ask:
+
+> Install my memory system: `npm install -g aifp-mcp`
+
+The `postinstall` hook **auto-configures every detected AI tool** (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent) and prints a status report. Restart the tool and memory tools are available. The agent will see the report and tell you what to restart — no manual MCP configuration needed.
+
 > **First launch**: downloads a ~30 MB embedding model (bge-small-zh), blocking up to 45 s. Later launches are instant (cached).
 
 ## Local mode vs server-enhanced mode

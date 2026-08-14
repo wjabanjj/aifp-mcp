@@ -22,6 +22,14 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 
 重启 Claude Code 即可使用。数据存在 `~/.ai-cognition/data/cognition.db`。
 
+### 在任意 AI 对话中安装（推荐）
+
+不需要手动配任何东西。在 Claude Code、Codex、Cursor、DeepSeek Harness 等任意工具里直接输入：
+
+> 帮我安装记忆系统：`npm install -g aifp-mcp`
+
+`postinstall` 钩子会**自动检测并配置所有已安装的 AI 工具**（Claude Code、Cursor、Windsurf、Cline、Gemini CLI、Qwen Code、Zed、VS Code Copilot、Codex CLI、Trae、DeepSeek Harness、pi-coding-agent），并打印状态报告。重启工具即可使用记忆工具——AI 看到报告后会告诉你重启哪个，**无需手动改任何 MCP 配置文件**。
+
 > **首次启动**：需要下载 ~30MB 的 bge-small-zh 嵌入模型，最多阻塞 45 秒。后续启动有缓存，秒开。
 
 ## 本地模式 vs 服务器增强模式

@@ -22,8 +22,10 @@ try {
   const setupEntry = resolve(PACKAGE_ROOT, 'dist', 'setup', 'index.js')
   if (existsSync(setupEntry)) {
     const { configureAll } = await import(`file://${setupEntry.replace(/\\/g, '/')}`)
-    configureAll({ silent: true })
-    console.error('[aifp-mcp] ✓ 多平台 MCP / pi 扩展配置完成')
+    // 完整报告（非 silent）：列出各平台配置结果，AI/用户可直接读取
+    configureAll()
+    console.error('')
+    console.error('[aifp-mcp] ✓ 安装配置完成：已自动接入所有检测到的 AI 工具，重启对应工具即可使用记忆系统')
   } else {
     console.error('[aifp-mcp] dist/setup 不存在，跳过自动配置（可手动运行 node dist/setup/index.js）')
   }
@@ -73,4 +75,4 @@ try {
   console.error(`[aifp-mcp] hooks 注册失败: ${e?.message ?? e}`)
 }
 
-console.error('[aifp-mcp] ✓ 配置完成，重启 AI 工具即可使用记忆系统')
+

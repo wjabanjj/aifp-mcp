@@ -159,6 +159,41 @@ const platforms: Platform[] = [
       } catch { return 'error' }
     },
   },
+  {
+    id: 'dsh', name: 'DeepSeek Harness (dsh)',
+    detected: () => existsSync(join(HOME, '.dsh')),
+    configure: (s) => {
+      // Cordis 补丁层：~/.dsh/cordis.patch.yml（对所有 profile 生效）
+      const p = join(HOME, '.dsh', 'cordis.patch.yml')
+      try {
+        mkdirSync(dirname(p), { recursive: true })
+        let yaml = ''
+        try { yaml = readFileSync(p, 'utf-8') } catch { /* 新建 */ }
+        if (yaml.includes('id: memory-aifp')) return 'exists'
+        const entry = s.args[0].replace(/\\/g, '/')
+        const root = dirname(dirname(s.args[0])).replace(/\\/g, '/')
+        const block = [
+          '',
+          '# AiFP 记忆感知系统（aifp-mcp）— 由 postinstall 自动添加，删除本段即可卸载',
+          '- insert:',
+          '    - id: memory-aifp',
+          "      name: '@deepseek-ai/dsh-mcp-client'",
+          '      config:',
+          '        serverName: ai-cognition',
+          '        transport: stdio',
+          `        command: '${s.command}'`,
+          `        args: ['${entry}']`,
+          `        cwd: '${root}'`,
+          '        env:',
+          '          COGNITION_MODE: local',
+          '          COGNITION_RECOGNIZER: "1"',
+          '',
+        ].join('\n')
+        writeFileSync(p, yaml.trimEnd() + '\n' + block, 'utf-8')
+        return 'ok'
+      } catch { return 'error' }
+    },
+  },
 ]
 
 export const ALL_PLATFORMS = platforms
@@ -181,6 +216,15 @@ export function injectRules(serverName = 'ai-cognition'): string[] {
 - 用户分享新信息 → \`save_memory\`
 - 用户说新增了笔记 → \`reimport_sources\`
 - 需要综合回顾 → \`recall_context\`
+
+## 安装/重装引导（用户要求时）
+
+用户说"安装/重装/升级记忆系统"或"npm install -g aifp-mcp"时：
+
+1. 直接执行 \`npm install -g aifp-mcp\`（或 \`npm i -g aifp-mcp@latest\` 升级）
+2. 安装完成后 **postinstall 会自动配置所有已安装的 AI 工具**（Claude Code、Cursor、Codex、DeepSeek Harness、pi 等），无需手动改任何配置文件
+3. 看到 "[aifp-mcp] ✓ 配置完成" 后，提示用户**重启当前工具**（MCP 工具在工具启动时加载）
+4. 不要手动创建或编辑 MCP 配置文件（.claude/settings.json、.codex/config.toml、~/.dsh/cordis.patch.yml 等）
 `
   const done: string[] = []
   for (const { path, name } of rules) {
