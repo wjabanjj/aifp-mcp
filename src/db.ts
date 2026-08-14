@@ -1213,7 +1213,25 @@ async function autoLinkNewMemory(newId: string, content: string, tags: string[])
       .filter(m => m.id !== newId)
       .slice(0, 5)
 
-    for (const mem of similar) {
+    // ── 关键词交集召回（宽松兜底：语义召回不足时用关键词 LIKE 补齐，保证相关记忆能建边） ──
+    const seen = new Set(similar.map(m => m.id))
+    try {
+      const { extractKeywords } = await import('./keywords.js')
+      const kws = extractKeywords(content, 10).filter(k => k.length >= 2)
+      if (kws.length > 0) {
+        const orSql = kws.map(() => 'content LIKE ?').join(' OR ')
+        const kwRows = db.prepare(
+          `SELECT id, content FROM memories WHERE (${orSql}) AND id != ? AND visibility = 1 LIMIT 10`
+        ).all(...kws.map(k => `%${k}%`), newId) as { id: string; content: string }[]
+        for (const row of kwRows) {
+          if (seen.has(row.id)) continue
+          seen.add(row.id)
+          similar.push({ id: row.id, content: row.content } as any)
+        }
+      }
+    } catch { /* 关键词召回失败不影响主线 */ }
+
+    for (const mem of similar.slice(0, 8)) {
       const relType = inferPerceptionRelation(content, mem.content)
       addPerceptionLink(newId, mem.id, relType, 0.5, `通过内容相似性自动关联`)
     }

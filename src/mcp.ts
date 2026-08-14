@@ -633,14 +633,23 @@ tools.set('get_related_memories', async (params) => {
       return { memories: result.memories || [], source: 'server' }
     } catch { /* 服务器不可用降级 */ }
   }
-  // local 模式：本地 Hebbian 共现关联查询
+  // local 模式：本地 Hebbian 共现关联查询（空时回退感知链相邻节点，保证相关记忆可查）
   try {
     const { getAssociatedMemoryIds } = await import('./association.js')
     const { getDb } = await import('./db.js')
-    const ids = getAssociatedMemoryIds(params.mem_id)
+    const db = getDb()
+    let ids = getAssociatedMemoryIds(params.mem_id)
+    if (!ids.length) {
+      // 回退：perception_links 直接相邻节点（感知链边也算关联）
+      const neighbors = db.prepare(
+        `SELECT source_id AS id FROM perception_links WHERE target_id = ?
+         UNION SELECT target_id AS id FROM perception_links WHERE source_id = ?`
+      ).all(params.mem_id, params.mem_id) as { id: string }[]
+      ids = neighbors.map(n => n.id)
+    }
     if (!ids.length) return { memories: [], source: 'local' }
     const placeholders = ids.map(() => '?').join(',')
-    const rows = getDb().prepare(
+    const rows = db.prepare(
       `SELECT id, mem_id, content, type, title, salience FROM memories WHERE id IN (${placeholders}) AND visibility = 1`
     ).all(...ids) as any[]
     return { memories: rows, source: 'local' }

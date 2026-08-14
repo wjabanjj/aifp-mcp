@@ -26,20 +26,13 @@ export async function importSources(sources?: string[], projectPath?: string): P
   const targets: string[] = []
 
   if (!sources || sources.length === 0) {
-    // 优先扫描 COGNITION_SOURCES 配置的目录
+    // 仅扫描显式配置的 COGNITION_SOURCES 目录；
+    // 无配置时不自动导入（避免 MCP 启动 cwd=包目录时把包自身文件当记忆）
     if (config.sourceDirs.length > 0) {
       for (const sd of config.sourceDirs) {
         if (existsSync(sd.path) && statSync(sd.path).isDirectory()) {
           targets.push(...walkDir(sd.path))
         }
-      }
-    }
-    // 保底：未配置来源目录时，扫描当前项目根下的常见文件
-    if (targets.length === 0) {
-      const cwd = process.cwd()
-      for (const name of ['README.md', 'package.json', 'tsconfig.json', '.env.example']) {
-        const p = resolve(cwd, name)
-        if (existsSync(p)) targets.push(p)
       }
     }
   } else {
