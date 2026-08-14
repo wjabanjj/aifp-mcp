@@ -47,3 +47,12 @@ server.json
 
 # 服务器本地数据
 data/
+
+# 内部诊断脚本（不发布）
+benchmark-report.json
+clean-noise.cjs
+diag-recognizer.cjs
+verify-mcp.cjs
+
+# 内部运营文档（含服务器安全基线，不发布）
+docs/服务器接入与密钥分发.md
