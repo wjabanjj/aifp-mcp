@@ -79,7 +79,7 @@ const toolDefinitions = [
   },
   {
     name: 'search_memories',
-    description: '搜索记忆。当用户提及之前讨论过的话题、项目、偏好、技术决策时，主动调用此工具检索相关记忆。支持关键词搜索（FTS5全文索引）+ 向量语义兜底。自动连接服务器进行 Z-score 融合排序；服务器不可用时降级为本地按重要性排序。返回结果含 source 字段标识 "server" 或 "local"。',
+    description: '搜索记忆库，查找与查询词相关的历史记忆。当用户提及之前讨论过的话题、项目、偏好、技术决策，或需要了解用户背景信息时，主动调用此工具。支持关键词 + 语义双路检索，适合大部分回忆场景。本地模式：FTS5 全文 + 向量语义 6 路检索。连接服务器后：额外启用 Z-score 融合排序 + 冲突证据补充（自动拉入矛盾记忆的另一端）。返回结果含 source 字段标识 "server" 或 "local"。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -96,7 +96,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_memory',
-    description: '按ID获取单条记忆详情',
+    description: '按 ID 获取单条记忆的完整详情（内容、类型、标签、置信度等）。当已通过 search_memories 或 recall_context 拿到记忆 ID，需要查看该条记忆的完整信息时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -107,7 +107,7 @@ const toolDefinitions = [
   },
   {
     name: 'list_memories',
-    description: '分页列出记忆，按重要性倒序',
+    description: '分页列出记忆库中的记忆，按重要性倒序。当需要浏览记忆库全貌、盘点已记住的内容、或按类型/层级筛选查看时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -120,7 +120,7 @@ const toolDefinitions = [
   },
   {
     name: 'trace_perception_chain',
-    description: '追踪记忆的感知链（BFS），查看"为什么"和"导致什么"。自动连接服务器进行深度 BFS（depth=8，双向）；服务器不可用时降级为本地 2 步简易 BFS。返回结果含 depth 和 relation 字段。',
+    description: '追踪记忆的感知链（BFS），查看"为什么"和"导致什么"。需要连接服务器（depth=8 双向 BFS）；本地模式不可用。返回结果含 depth 和 relation 字段。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -133,7 +133,7 @@ const toolDefinitions = [
   },
   {
     name: 'find_perception_path',
-    description: '查找两个记忆节点之间的最短因果路径（双向 BFS）。自动连接服务器进行深度搜索；服务器不可用时返回空数组。',
+    description: '查找两个记忆节点之间的最短因果路径（双向 BFS）。需要连接服务器进行深度搜索；本地模式不可用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -146,7 +146,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_perception_graph_stats',
-    description: '获取因果图统计信息——节点数、边数、关系类型分布、中心节点',
+    description: '获取因果图统计信息——节点数、边数、关系类型分布、中心节点。需要连接服务器；本地模式不可用。',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -154,7 +154,7 @@ const toolDefinitions = [
   },
   {
     name: 'diffuse_memories',
-    description: '记忆扩散搜索——从一组记忆出发，沿关联关系向外多跳扩散，发现间接相关的知识。自动连接服务器进行加权扩散（按 relation_type 区分权重）；服务器不可用时返回空数组。',
+    description: '记忆扩散搜索——从一组记忆出发，沿关联关系向外多跳扩散，发现间接相关的知识。需要连接服务器进行加权扩散（按 relation_type 区分权重）；本地模式不可用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -166,7 +166,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_memory_tree',
-    description: '获取记忆树结构（按 parent_id 组织的层级树）',
+    description: '获取记忆的层级树结构（按 parent_id 组织的父子关系）。当需要理解记忆之间的从属/包含关系时调用。',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -174,7 +174,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_related_memories',
-    description: '获取与指定记忆关联的其他记忆（Hebbian 共现关联）',
+    description: '获取与指定记忆关联的其他记忆（Hebbian 共现关联），即"一起出现"的记忆。当需要围绕一条记忆展开关联信息、发现间接主题时调用。本地模式可用（基于本地共现矩阵）；连接服务器后计算更完整。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -185,7 +185,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_stats',
-    description: '获取记忆感知系统统计信息（记忆总数、类型分布等）',
+    description: '获取记忆感知系统统计信息（记忆总数、类型分布、层级分布等）。当需要了解系统整体状态、记忆库规模时调用。',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -201,7 +201,7 @@ const toolDefinitions = [
   },
   {
     name: 'recall_context',
-    description: '一键回忆（比 search_memories 更全面）：当需要全面了解某个主题的来龙去脉时调用此工具，同时检索 FTS5 全文 + 向量语义 + 感知链 + Hebbian 关联 + 多跳扩散。适合在新任务开始时调用，获取任务相关的完整背景。自动连接服务器进行深度因果追踪（backward depth=8）和一站式评分；服务器不可用时降级为本地 salience 排序。返回结果含 source 字段。',
+    description: '一键回忆（比 search_memories 更全面）：当需要全面了解某个主题的来龙去脉时调用此工具。本地模式：仅 FTS5 全文 + 向量语义基础检索（不含感知链/关联/扩散）。连接服务器后：额外叠加感知链深度溯源（backward depth=8）+ Hebbian 关联 + 多跳扩散。返回结果含 source 字段。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -216,12 +216,12 @@ const toolDefinitions = [
   },
   {
     name: 'consolidate_memories',
-    description: '手动触发记忆巩固：根据使用频率和重要性自动晋升记忆层级（episodic → internalized → growth）。系统启动时也会自动运行。',
+    description: '手动触发记忆巩固：根据使用频率和重要性自动晋升记忆层级（episodic → internalized → growth）。系统启动时也会自动运行，通常无需手动调用；需要立即巩固时可用。',
     inputSchema: { type: 'object', properties: {} },
   },
   {
     name: 'share_memory',
-    description: '设置记忆的共享状态，允许其他 Agent 访问',
+    description: '设置记忆的共享状态（允许其他 Agent 访问）。多 Agent 协作场景下，需要把某条记忆共享给其他 Agent 时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -233,7 +233,7 @@ const toolDefinitions = [
   },
   {
     name: 'merge_memories',
-    description: '合并重复记忆，将多条记忆合并到一条目标记忆',
+    description: '合并重复记忆：将多条内容重复/相似的记忆合并到一条目标记忆。当检索结果中发现明显重复的记忆时调用，减少冗余。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -245,7 +245,7 @@ const toolDefinitions = [
   },
   {
     name: 'batch_delete',
-    description: '批量删除记忆（软删除）',
+    description: '批量删除记忆（软删除，可恢复）。需要清理不再需要的多条记忆时调用，比逐条删除高效。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -256,7 +256,7 @@ const toolDefinitions = [
   },
   {
     name: 'batch_update',
-    description: '批量更新记忆的标签/重要性',
+    description: '批量更新记忆的标签或重要性。需要统一调整多条记忆的分类或权重时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -268,7 +268,7 @@ const toolDefinitions = [
   },
   {
     name: 'export_memories',
-    description: '导出记忆为 JSON。支持按类型/层级筛选',
+    description: '导出记忆为 JSON，支持按类型/层级筛选。需要备份、迁移或分析记忆数据时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -281,7 +281,7 @@ const toolDefinitions = [
   },
   {
     name: 'explain_query',
-    description: '解释检索结果路径分解，展示每条记忆来自哪些路径（FTS/向量/实体/时间/关键词）以及分数构成',
+    description: '解释检索结果路径分解：展示每条记忆来自哪些路径（FTS/向量/实体/时间/关键词）以及分数构成。当需要理解"为什么这条记忆被检索到"、排查检索质量时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -293,12 +293,12 @@ const toolDefinitions = [
   },
   {
     name: 'get_confidence_stats',
-    description: '查看置信度分布统计。展示当前记忆库中各置信度层级（0.3/0.5/0.7/0.9）的数量分布',
+    description: '查看置信度分布统计：展示当前记忆库中各置信度层级（0.3/0.5/0.7/0.9）的数量分布。当需要评估记忆库整体可信度时调用。',
     inputSchema: { type: 'object', properties: {} },
   },
   {
     name: 'scan_memory_patterns',
-    description: '扫描近期记忆模式：按类型/标签聚类分析，了解当前记忆库的内容分布和趋势',
+    description: '扫描近期记忆模式：按类型/标签聚类分析，了解当前记忆库的内容分布和趋势。当需要总结用户近期关注点、记忆主题变化时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -309,7 +309,7 @@ const toolDefinitions = [
   },
   {
     name: 'validate_memory',
-    description: '验证记忆内容质量（长度/瞬态/猜测三重门禁）',
+    description: '验证记忆内容质量（长度/瞬态/猜测三重门禁）。保存记忆前可调用它预检内容是否值得入记忆。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -320,7 +320,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_top_experiences',
-    description: '获取按衰减分数排序的 Top N 经验教训',
+    description: '获取按衰减分数排序的 Top N 经验教训。当需要提取记忆库中最重要/最常被引用的经验时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -330,7 +330,7 @@ const toolDefinitions = [
   },
   {
     name: 'deduplicate_memories',
-    description: '按内容前 80 字分组去重，保留 salience 最高的',
+    description: '按内容前 80 字分组去重，保留 salience 最高的。当记忆库出现重复时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -340,7 +340,7 @@ const toolDefinitions = [
   },
   {
     name: 'scan_observation_patterns',
-    description: '扫描最近 N 小时的观察日志，返回高频错误模式',
+    description: '扫描最近 N 小时的观察日志，返回高频错误模式。当需要从操作日志中提取失败规律时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -350,12 +350,12 @@ const toolDefinitions = [
   },
   {
     name: 'rotate_observation_logs',
-    description: '清理 7 天前的观察日志文件',
+    description: '清理 7 天前的观察日志文件。定期维护用，一般由系统自动处理，无需手动调用。',
     inputSchema: { type: 'object', properties: {} },
   },
   {
     name: 'session_mine',
-    description: '挖掘对话会话中的决策、踩坑、编辑循环',
+    description: '挖掘对话会话中的决策、踩坑、编辑循环，提炼经验。当需要从一段对话历史中提取可复用经验时调用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -368,7 +368,7 @@ const toolDefinitions = [
   },
   {
     name: 'derive_memories',
-    description: '从对话中识别并保存长期记忆（需先调用 set_llm_fallback 配置 LLM）',
+    description: '从对话中识别并保存长期记忆。需要连接服务器（服务器 LLM 识别）；本地模式不可用。',
     inputSchema: {
       type: 'object',
       properties: {

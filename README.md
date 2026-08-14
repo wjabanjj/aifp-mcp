@@ -9,7 +9,7 @@ AiFP gives Claude Code, Cursor, Codex, DeepSeek Harness, and any other MCP-capab
 ## Why AiFP
 
 - **Chinese-first retrieval** — `bge-small-zh-v1.5` embeddings (local, 512-dim) + CJK-aware FTS5 full-text search. Competitors are English-first; AiFP is built for Chinese.
-- **Perception chains, not just search** — directional causal links (LEADS_TO / BECAUSE_OF / ENABLES / PREVENTS / RESPONSE_TO / CO_OCCURS_WITH), Hebbian co-occurrence, and BFS graph diffusion uncover knowledge that keyword search never will.
+- **Perception chains (cloud)** — directional causal links (LEADS_TO / BECAUSE_OF / ENABLES / PREVENTS / RESPONSE_TO / CO_OCCURS_WITH), Hebbian co-occurrence, and BFS graph diffusion uncover knowledge that keyword search never will.
 - **Private by default** — SQLite database + local embeddings. No cloud, no account, no telemetry.
 - **One-command setup** — `npm install -g` auto-configures 10+ AI tools (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, pi-coding-agent).
 
@@ -23,6 +23,22 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 Restart Claude Code and you're done. Data lives in `~/.ai-cognition/data/cognition.db`.
 
 > **First launch**: downloads a ~30 MB embedding model (bge-small-zh), blocking up to 45 s. Later launches are instant (cached).
+
+## Local mode vs server-enhanced mode
+
+AiFP runs in two modes (env `COGNITION_MODE`, default `remote`):
+
+| Capability | Local mode | Server-enhanced (`remote`) |
+|------------|:---:|:---:|
+| Save / read / list memories | ✅ | ✅ |
+| Dual-path search (FTS5 + vector) | ✅ | ✅ + Z-score fusion ranking |
+| Hebbian co-occurrence (`get_related_memories`) | ✅ | ✅ (fuller) |
+| Auto-recognition (`observe_turn` → recognizer) | ⚠️ needs your own LLM key | ✅ server LLM, zero config |
+| Recall (`recall_context`) | basic retrieval only | ✅ + perception-chain tracing |
+| **Perception chains** (trace / path / graph stats / diffusion) | ❌ | ✅ depth-8 BFS |
+| **Memory derivation** (`derive_memories`) | ❌ | ✅ server LLM |
+
+Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. Set `COGNITION_SERVER_URL` + `COGNITION_API_KEY` to enable them.
 
 ## 12 MCP tools
 

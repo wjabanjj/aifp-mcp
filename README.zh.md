@@ -9,7 +9,7 @@
 ## 为什么选 AiFP
 
 - **中文优先检索** — `bge-small-zh-v1.5` 向量嵌入（本地 512 维）+ CJK 感知的 FTS5 全文检索。竞品英文优先，AiFP 为中文而生。
-- **感知链，不只是搜索** — 有向因果链（LEADS_TO / BECAUSE_OF / ENABLES / PREVENTS / RESPONSE_TO / CO_OCCURS_WITH）、Hebbian 共现、BFS 图扩散，能挖出关键词搜索永远找不到的知识。
+- **感知链（云端）** — 有向因果链（LEADS_TO / BECAUSE_OF / ENABLES / PREVENTS / RESPONSE_TO / CO_OCCURS_WITH）、Hebbian 共现、BFS 图扩散，能挖出关键词搜索永远找不到的知识。
 - **默认私有** — SQLite 数据库 + 本地嵌入，无云、无账号、无遥测。
 - **一条命令配好** — `npm install -g` 自动配置 10+ 个 AI 工具（Claude Code、Cursor、Windsurf、Cline、Gemini CLI、Qwen Code、Zed、VS Code Copilot、Codex CLI、Trae、pi-coding-agent）。
 
@@ -23,6 +23,22 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 重启 Claude Code 即可使用。数据存在 `~/.ai-cognition/data/cognition.db`。
 
 > **首次启动**：需要下载 ~30MB 的 bge-small-zh 嵌入模型，最多阻塞 45 秒。后续启动有缓存，秒开。
+
+## 本地模式 vs 服务器增强模式
+
+AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`）：
+
+| 能力 | 本地模式 | 服务器增强（`remote`） |
+|------|:---:|:---:|
+| 保存 / 读取 / 列出记忆 | ✅ | ✅ |
+| 双路检索（FTS5 + 向量） | ✅ | ✅ + Z-score 融合排序 |
+| Hebbian 共现（get_related_memories） | ✅ | ✅（更完整） |
+| 自动识别（observe_turn → 识别器） | ⚠️ 需自配 LLM key | ✅ 服务器 LLM，零配置 |
+| 一键回忆（recall_context） | 仅基础检索 | ✅ + 感知链深度溯源 |
+| **感知链**（追踪/寻路/图统计/扩散） | ❌ | ✅ depth=8 BFS |
+| **记忆提炼**（derive_memories） | ❌ | ✅ 服务器 LLM |
+
+本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。设置 `COGNITION_SERVER_URL` + `COGNITION_API_KEY` 后自动启用。
 
 ## 12 个 MCP 工具
 
