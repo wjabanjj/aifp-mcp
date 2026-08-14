@@ -63,7 +63,17 @@ AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`�
 | **感知链**（追踪/寻路/图统计/扩散） | ❌ | ✅ depth=8 BFS |
 | **记忆提炼**（derive_memories） | ⚠️ 需自配 LLM key | ⚠️ 同样需自配 LLM key（成本归用户） |
 
-本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。设置 `COGNITION_SERVER_URL` + `COGNITION_API_KEY` 后自动启用。
+本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。服务器地址不随包分发（防攻击），需通过官方接入渠道获取：
+
+```bash
+# 启用服务器增强（需先获得接入地址和密钥）
+export COGNITION_MODE=remote
+export COGNITION_SERVER_URL=<官方提供的地址>
+export COGNITION_API_KEY=<官方提供的密钥>
+npx aifp-mcp
+```
+
+> 接入地址和密钥通过官方渠道发放（付费订阅/授权），不在本包中公开。
 
 ## MCP 工具（共 31 个）
 

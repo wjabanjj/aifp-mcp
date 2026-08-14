@@ -63,7 +63,17 @@ AiFP runs in two modes (env `COGNITION_MODE`, default `remote`):
 | **Perception chains** (trace / path / graph stats / diffusion) | ❌ | ✅ depth-8 BFS |
 | **Memory derivation** (`derive_memories`) | ❌ | ✅ server LLM |
 
-Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. Set `COGNITION_SERVER_URL` + `COGNITION_API_KEY` to enable them.
+Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. The server address is not shipped with the package (anti-attack); get it through the official channel:
+
+```bash
+# Enable server enhancement (requires address + key from the official channel)
+export COGNITION_MODE=remote
+export COGNITION_SERVER_URL=<official address>
+export COGNITION_API_KEY=<official key>
+npx aifp-mcp
+```
+
+> Access address and key are distributed through official channels (subscription/license), never bundled in this package.
 
 ## MCP tools (31 total)
 
