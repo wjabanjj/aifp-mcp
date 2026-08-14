@@ -154,7 +154,7 @@ const toolDefinitions = [
   },
   {
     name: 'diffuse_memories',
-    description: '记忆扩散搜索——从一组记忆出发，沿关联关系向外多跳扩散，发现间接相关的知识。本地模式：沿感知链边 1-3 跳简易扩散；连接服务器后：加权扩散（按 relation_type 区分权重，深度更大）。',
+    description: '记忆扩散搜索——从一组记忆出发，沿关联关系向外多跳扩散，发现间接相关的知识。需要连接服务器进行加权扩散（按 relation_type 区分权重）；本地模式不可用。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -623,40 +623,8 @@ tools.set('diffuse_memories', async (params) => {
     } catch {}
   }
 
-  // 本地：简易 BFS 图扩散（沿感知链边 1-3 跳），强化版在服务器端
-  try {
-    const db = gdb()
-    const edges = db.prepare('SELECT source_id, target_id, relation_type FROM perception_links').all() as any[]
-    const adj = new Map<string, { id: string; rel: string }[]>()
-    for (const e of edges) {
-      for (const [a, b] of [[e.source_id, e.target_id], [e.target_id, e.source_id]] as const) {
-        if (!adj.has(a)) adj.set(a, [])
-        adj.get(a)!.push({ id: b, rel: e.relation_type })
-      }
-    }
-    const maxHops = Math.min(params.max_hops || 2, 3)
-    const seeds: string[] = Array.isArray(params.seed_ids) ? params.seed_ids : []
-    const visited = new Set<string>(seeds)
-    const queue: { id: string; depth: number }[] = seeds.map(s => ({ id: s, depth: 0 }))
-    const nodes: { memoryId: string; relation: string; depth: number; content?: string; title?: string }[] = []
-    while (queue.length) {
-      const cur = queue.shift()!
-      if (cur.depth >= maxHops) continue
-      for (const nb of adj.get(cur.id) || []) {
-        if (visited.has(nb.id)) continue
-        visited.add(nb.id)
-        nodes.push({ memoryId: nb.id, relation: nb.rel, depth: cur.depth + 1 })
-        queue.push({ id: nb.id, depth: cur.depth + 1 })
-      }
-    }
-    for (const n of nodes) {
-      const row = db.prepare('SELECT content, title FROM memories WHERE id = ? LIMIT 1').get(n.memoryId) as { content?: string; title?: string } | undefined
-      if (row) { n.content = row.content; n.title = row.title }
-    }
-    return { nodes, source: 'local' }
-  } catch (e) {
-    return { nodes: [], error: (e as Error)?.message, source: 'local' }
-  }
+  // 本地：不做图扩散（扩散属于服务器增强能力，本地保持基础定位）
+  return { nodes: [], message: '记忆扩散需要连接服务器，本地模式不可用' }
 })
 
 tools.set('get_memory_tree', async () => {
