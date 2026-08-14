@@ -1,12 +1,12 @@
 # AiFP 记忆感知系统 — MCP Server
 
-**没有记录，只做记忆感知。** 通过 [Model Context Protocol](https://modelcontextprotocol.io/) 为 AI 编程助手提供持久记忆。
+通过 [Model Context Protocol](https://modelcontextprotocol.io/) 为 AI 编程助手提供持久记忆。
 
 [English](./README.md) · [npm](https://www.npmjs.com/package/aifp-mcp)
 
-让 Claude Code、Cursor、Codex、DeepSeek Harness 等一切支持 MCP 的 AI 工具拥有**跨会话的持续记忆**。完全本地运行，数据不出本机（默认 `~/.ai-cognition/`）。
+让 Obsidian、Deepseek Harness、Claude Code、Cursor、Codex、DeepSeek Harness 等一切支持 MCP 的 AI 工具拥有**跨会话的持续记忆**。完全本地运行，数据不出本机（默认 `~/.ai-cognition/`）。
 
-## 为什么选 AiFP — 是大脑，不是文件柜
+## 为什么选 AiFP — 是大脑，不是文件柜、支持全局记忆共享（所有桌面Agent同时共享一套记忆）
 
 多数 AI 记忆系统只是**存储**——一个供搜索的文件柜。AiFP 的目标是像大脑一样**感知、联结、遗忘**：
 
@@ -55,21 +55,11 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 
 AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`）：
 
-| 能力 | 本地模式 | 服务器增强（`remote`） |
-|------|:---:|:---:|
-| 保存 / 读取 / 列出记忆 | ✅ | ✅ |
-| 双路检索（FTS5 + 向量） | ✅ | ✅ + Z-score 融合排序 |
-| Hebbian 共现（get_related_memories） | ✅ | ✅（更完整） |
-| 自动识别（observe_turn → 识别器） | ⚠️ 需自配 LLM key | ⚠️ 同样需自配 LLM key（成本归用户，服务器不做 LLM） |
-| 一键回忆（recall_context） | 仅基础检索 | ✅ + 感知链深度溯源 |
-| **感知链**（追踪/寻路/图统计/扩散） | ❌ | ✅ depth=8 BFS |
-| **记忆提炼**（derive_memories） | ⚠️ 需自配 LLM key | ⚠️ 同样需自配 LLM key（成本归用户） |
-
-本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。服务器地址不随包分发（防攻击），需通过官方接入渠道获取。
+本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。服务器地址不随包分发，需通过官方接入渠道获取。
 
 ### 拿到 key 后，一条命令连上
 
-> 接入地址和密钥通过官方渠道发放：**联系作者（微信/QQ/邮箱：<此处填你的联系方式>）订阅后发放**，不随包公开。订阅到期可单独吊销，不影响其他用户。
+> 接入地址和密钥通过官方渠道发放：**联系作者（微信：zm8571806/QQ：8571806/邮箱：8571806@qq.com）订阅后发放**，不随包公开。订阅到期可单独吊销，不影响其他用户。
 
 ```bash
 # 1. 安装（如未安装）

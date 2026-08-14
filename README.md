@@ -1,12 +1,12 @@
 # AiFP Cognitive Memory — MCP Server
 
-**No records, only perception.** Persistent memory for AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
+Persistent memory for AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 [中文文档](./README.zh.md) · [npm](https://www.npmjs.com/package/aifp-mcp)
 
-AiFP gives Claude Code, Cursor, Codex, DeepSeek Harness, and any other MCP-capable tool a **continuous memory that survives sessions**. It runs fully locally — your data never leaves your machine (default `~/.ai-cognition/`).
+AiFP gives Obsidian, Claude Code, Cursor, Codex, DeepSeek Harness, and any other MCP-capable tool a **continuous memory that survives sessions**. It runs fully locally — your data never leaves your machine (default `~/.ai-cognition/`).
 
-## Why AiFP — a brain, not a file cabinet
+## Why AiFP — a brain, not a file cabinet — one shared memory for all your desktop agents
 
 Most AI memory systems just **store** — a file cabinet you search. AiFP is built to **perceive, connect, and forget like a brain**:
 
@@ -51,25 +51,15 @@ The `postinstall` hook **auto-configures every detected AI tool** (Claude Code, 
 
 > **First launch**: downloads a ~30 MB embedding model (bge-small-zh), blocking up to 45 s. Later launches are instant (cached).
 
-## Local mode vs server-enhanced mode
+## Server-enhanced mode
 
 AiFP runs in two modes (env `COGNITION_MODE`, default `remote`):
-
-| Capability | Local mode | Server-enhanced (`remote`) |
-|------------|:---:|:---:|
-| Save / read / list memories | ✅ | ✅ |
-| Dual-path search (FTS5 + vector) | ✅ | ✅ + Z-score fusion ranking |
-| Hebbian co-occurrence (`get_related_memories`) | ✅ | ✅ (fuller) |
-| Auto-recognition (`observe_turn` → recognizer) | ⚠️ needs your own LLM key | ⚠️ same (LLM cost is user-side) |
-| Recall (`recall_context`) | basic retrieval only | ✅ + perception-chain tracing |
-| **Perception chains** (trace / path / graph stats / diffusion) | ❌ | ✅ depth-8 BFS |
-| **Memory derivation** (`derive_memories`) | ⚠️ needs your LLM key | ⚠️ same (LLM cost is user-side) |
 
 Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. The server address is not shipped with the package (anti-attack); get it through the official channel.
 
 ### One command to connect (after you have a key)
 
-> Access address and key are distributed through the official channel: **contact the author (WeChat / QQ / email: <fill in your contact>) to subscribe** — never bundled in this package. Subscriptions can be revoked individually without affecting other users.
+> Access address and key are distributed through the official channel: **contact the author (WeChat: zm8571806 / QQ: 8571806 / email: 8571806@qq.com) to subscribe** — never bundled in this package. Subscriptions can be revoked individually without affecting other users.
 
 ```bash
 # 1. Install (if not yet)
