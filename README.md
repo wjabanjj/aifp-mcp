@@ -159,7 +159,7 @@ COGNITION_DATA_DIR=/path/to/data npx aifp-mcp
 |----------|---------|-------------|
 | `COGNITION_DATA_DIR` | `~/.ai-cognition/` | Data storage directory |
 | `COGNITION_MODE` | `remote` | `local` local-only / `remote` server-enhanced |
-| `COGNITION_SERVER_URL` | `http://43.143.222.90:5000` | Remote core-server URL |
+| `COGNITION_SERVER_URL` | *(none — configure explicitly)* | Remote algorithm-server URL (self-hosted) |
 | `COGNITION_API_KEY` | - | API key for remote mode |
 | `COGNITION_RECOGNIZER` | `0` | Set `1` to enable auto-recognition |
 | `COGNITION_LLM_API_KEY` | - | LLM key for the recognizer (OpenAI-compatible) |

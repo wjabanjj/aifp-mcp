@@ -27,8 +27,8 @@ export const config = {
   /** 运行模式：remote = 调服务器增强（默认）；local = 仅本地 */
   mode: (process.env['COGNITION_MODE'] || 'remote') as 'local' | 'remote',
 
-  /** 远程服务器地址（remote 模式）— 默认指向腾讯增强服务器 */
-  serverUrl: process.env['COGNITION_SERVER_URL'] || 'http://43.143.222.90:5000',
+  /** 远程服务器地址（remote 模式）— 无默认值，须用户显式配置；不内置具体服务器地址 */
+  serverUrl: process.env['COGNITION_SERVER_URL'] || '',
 
   /** API 密钥 — remote 模式下必须设置。无默认值，不硬编码 */
   apiKey: process.env['COGNITION_API_KEY'] || '',

@@ -159,7 +159,7 @@ COGNITION_DATA_DIR=/path/to/data npx aifp-mcp
 |------|--------|------|
 | `COGNITION_DATA_DIR` | `~/.ai-cognition/` | 数据存储目录 |
 | `COGNITION_MODE` | `remote` | `local` 本地保底 / `remote` 连接服务器增强 |
-| `COGNITION_SERVER_URL` | `http://43.143.222.90:5000` | 远程 core-server 地址 |
+| `COGNITION_SERVER_URL` | *（无默认，须显式配置）* | 远程算法服务器地址（自建） |
 | `COGNITION_API_KEY` | - | 远程模式 API 密钥 |
 | `COGNITION_RECOGNIZER` | `0` | 设为 `1` 启用自动识别 |
 | `COGNITION_LLM_API_KEY` | - | 识别器 LLM 密钥（OpenAI 兼容） |
