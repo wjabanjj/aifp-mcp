@@ -30,6 +30,8 @@ Most AI memory systems just **store** — a file cabinet you search. AiFP is bui
 
 **One-command setup**: `npm install -g` auto-configures 10+ AI tools (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent).
 
+**One brain, many assistants**: all your AI tools share the same local memory. What Claude learns today, Cursor remembers tomorrow — one memory, zero duplication.
+
 ## Quick start
 
 ```bash

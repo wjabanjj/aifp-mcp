@@ -30,6 +30,8 @@
 
 **一条命令配好**：`npm install -g` 自动配置 10+ 个 AI 工具（Claude Code、Cursor、Windsurf、Cline、Gemini CLI、Qwen Code、Zed、VS Code Copilot、Codex CLI、Trae、DeepSeek Harness、pi-coding-agent）。
 
+**一个大脑，多个助手**：同一台电脑上所有 AI 工具共享同一套本地记忆。今天 Claude Code 学到的，明天 Cursor 还记得——一份记忆，零重复。
+
 ## 快速开始
 
 ```bash
