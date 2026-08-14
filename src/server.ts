@@ -20,7 +20,7 @@ const SSL_CERT = process.env['SSL_CERT'] || ''
 const USE_HTTPS = !!(SSL_KEY && SSL_CERT)
 
 // ── 启动校验：无 key 或弱 key 拒绝启动（防裸奔） ──
-const { isAuthorized, keyCount } = await import('./server-keys.js')
+const { isAuthorized, keyCount, consumeQuota } = await import('./server-keys.js')
 const singleApiKey = process.env['COGNITION_API_KEY'] || ''
 if (!process.env['COGNITION_KEYS_FILE'] && (!singleApiKey || singleApiKey.length < 16)) {
   console.error('[记忆感知] 启动失败：必须设置 COGNITION_API_KEY（至少 16 字符）或 COGNITION_KEYS_FILE')
@@ -129,6 +129,12 @@ async function main() {
     const cors = corsHeadersFor(req)
     const headers = { ...cors, ...SECURITY_HEADERS }
 
+    // 管理面板路由（/admin*）
+    if (req.url?.startsWith('/admin')) {
+      const { handleAdmin } = await import('./admin-panel.js')
+      if (await handleAdmin(req, res, new URL(req.url, 'http://localhost'))) return
+    }
+
     // CORS 预检
     if (req.method === 'OPTIONS') {
       if (!cors['access-control-allow-origin']) {
@@ -161,6 +167,17 @@ async function main() {
       res.end(JSON.stringify({
         jsonrpc: '2.0', id: null,
         error: { code: -32001, message: 'Unauthorized' },
+      }))
+      return
+    }
+
+    // 配额消费（鉴权通过后；超限返回 429）
+    const authToken = (req.headers['authorization'] || '').slice(7)
+    if (consumeQuota(authToken) < 0) {
+      res.writeHead(429, { ...headers, 'content-type': 'application/json' })
+      res.end(JSON.stringify({
+        jsonrpc: '2.0', id: null,
+        error: { code: -32002, message: 'Daily quota exceeded' },
       }))
       return
     }

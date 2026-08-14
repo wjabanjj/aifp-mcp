@@ -36,3 +36,4 @@ Thumbs.db
 # 本机 MCP 配置（含绝对路径，不发布）
 .cursor/
 .mcp.json
+dist-server/

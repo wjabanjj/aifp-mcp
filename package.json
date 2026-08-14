@@ -13,7 +13,9 @@
     "server": "tsx src/server.ts",
     "build": "tsc",
     "prepublishOnly": "tsc",
-    "postinstall": "node scripts/postinstall.mjs"
+    "postinstall": "node scripts/postinstall.mjs",
+    "build:server": "tsc -p tsconfig.server.json",
+    "start:server": "node dist-server/server.js"
   },
   "publishConfig": {
     "access": "public"
