@@ -11,7 +11,6 @@ import { handleRequest, initServer } from './mcp-enhanced.js'
 
 const {
   port,
-  apiKey,
   allowedOrigin,
   rateLimitPerMinute,
 } = (await import('./config.js')).config
@@ -21,11 +20,15 @@ const SSL_CERT = process.env['SSL_CERT'] || ''
 const USE_HTTPS = !!(SSL_KEY && SSL_CERT)
 
 // ── 启动校验：无 key 或弱 key 拒绝启动（防裸奔） ──
-if (!apiKey || apiKey.length < 16) {
-  console.error('[记忆感知] 启动失败：必须设置 COGNITION_API_KEY（至少 16 字符）')
+const { isAuthorized, keyCount } = await import('./server-keys.js')
+const singleApiKey = process.env['COGNITION_API_KEY'] || ''
+if (!process.env['COGNITION_KEYS_FILE'] && (!singleApiKey || singleApiKey.length < 16)) {
+  console.error('[记忆感知] 启动失败：必须设置 COGNITION_API_KEY（至少 16 字符）或 COGNITION_KEYS_FILE')
   console.error('  示例: COGNITION_API_KEY=<32位随机串> node dist/server.js')
+  console.error('      或 COGNITION_KEYS_FILE=/etc/aifp/keys.txt（每行 用户名:key，支持热吊销）')
   process.exit(1)
 }
+if (singleApiKey) console.error(`[记忆感知] 已加载密钥：${process.env['COGNITION_KEYS_FILE'] ? `key 文件(${keyCount()} 个用户)` : '单 key 模式'}`)
 if (USE_HTTPS && (!existsSync(SSL_KEY) || !existsSync(SSL_CERT))) {
   console.error('[记忆感知] SSL_KEY/SSL_CERT 指向的文件不存在')
   process.exit(1)
@@ -66,15 +69,11 @@ function requesterIp(req: http.IncomingMessage): string {
     || req.socket.remoteAddress || 'unknown'
 }
 
-// ── 鉴权：固定 Bearer 比对（常数时间比较，防时序攻击） ──
+// ── 鉴权：Bearer 比对（常数时间比较，防时序攻击；支持多用户 key） ──
 function checkAuth(req: http.IncomingMessage): boolean {
   const auth = req.headers['authorization'] || ''
   if (!auth.startsWith('Bearer ')) return false
-  const supplied = auth.slice(7)
-  if (supplied.length !== apiKey.length) return false
-  let diff = 0
-  for (let i = 0; i < apiKey.length; i++) diff |= supplied.charCodeAt(i) ^ apiKey.charCodeAt(i)
-  return diff === 0
+  return isAuthorized(auth.slice(7))
 }
 
 // ── CORS：仅配置的来源可跨域；未配置则不开放跨域 ──

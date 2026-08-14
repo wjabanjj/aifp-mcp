@@ -73,7 +73,7 @@ export COGNITION_API_KEY=<official key>
 npx aifp-mcp
 ```
 
-> Access address and key are distributed through official channels (subscription/license), never bundled in this package.
+> Access address and key are distributed through the official channel: **contact the author (WeChat / QQ / email: <fill in your contact>) to subscribe** — never bundled in this package. Subscriptions can be revoked individually without affecting other users.
 
 ## MCP tools (31 total)
 
