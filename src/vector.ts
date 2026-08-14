@@ -57,7 +57,6 @@ class VectorEngine {
           quantized: true,
         })
         this.ready = true
-        console.error('[向量] 嵌入模型已加载')
         return
       } catch (e) {
         lastErr = e as Error

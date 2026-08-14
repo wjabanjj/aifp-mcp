@@ -438,9 +438,7 @@ export async function runRecognizerBatch(turns: RecognizerTurn[]): Promise<Writt
     if (writtenMemories.length > 0) {
       const inserted = writtenMemories.filter(m => m.action === 'inserted').length
       const updated = writtenMemories.filter(m => m.action === 'updated').length
-      console.error(`[Recognizer] 写入 ${writtenMemories.length} 条（新建 ${inserted} / 更新 ${updated}）`)
     } else {
-      console.error(`[Recognizer] ${skipped ? '显式跳过' : '无记忆写入'}`)
     }
   } catch (err: any) {
     console.error('[Recognizer] LLM 调用失败:', err.message)

@@ -152,7 +152,7 @@ export default async function (pi: ExtensionAPI) {
   const markReady = (n: number) => {
     toolsReady = true;
     toolCount = n;
-    console.error(\`[aifp-memory] 记忆工具已就绪（\${n} 个）：save_memory / search_memories / recall_context 等\`);
+    console.error('AiFP 记忆感知系统已加载');
   };
   registerAiFpTools(pi)
     .then((n) => markReady(n))

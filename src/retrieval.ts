@@ -186,7 +186,6 @@ export async function retrieve(query: string, options: {
   if (useVector) {
     try {
       const repaired = await vectorEngine.repairMissingEmbeddings(20)
-      if (repaired > 0) console.error(`[检索] 补了 ${repaired} 条缺失 embedding`)
     } catch {}
 
     _allVisibleEmbeds = getAllVisibleMemories()

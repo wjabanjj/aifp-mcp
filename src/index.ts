@@ -60,6 +60,7 @@ if (process.argv.includes('--setup')) {
 // 启动 MCP Server（stdin/stdout MCP 协议）
 const mcp = await import('./mcp.js')
 await mcp.startStdioServer()
+console.error('AiFP 记忆感知系统已加载')
 
 // 本地 Recognizer 调度器（COGNITION_RECOGNIZER=1 时启用，自动轮询识别队列）
 if (config.recognizerEnabled) {
