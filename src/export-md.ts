@@ -42,7 +42,10 @@ export function exportMemoriesAsMd(opts: ExportMdOptions): ExportMdResult {
   const sample: string[] = []
   for (const r of rows) {
     const title = (r.title || '').trim() || r.content.slice(0, 30)
-    const safeTitle = title.replace(/[\\/:*?"<>|#^[\]]/g, '_').slice(0, 50)
+    const safeTitle = title
+      .replace(/[\\/:*?"<>|#^[\]]/g, '_')              // 文件名非法字符
+      .replace(/[\n\r\t\u0000-\u001f]/g, ' ')         // 控制字符/换行（Windows 文件名非法）
+      .replace(/\s+/g, ' ').trim().slice(0, 50) || 'untitled'
     const idSuffix = r.id.slice(0, 6)
     const fileName = `${safeTitle}_${idSuffix}.md`
     const tags = (r.tags || '').split(',').map(t => t.trim()).filter(Boolean)
