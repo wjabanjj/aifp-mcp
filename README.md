@@ -6,12 +6,29 @@
 
 AiFP gives Claude Code, Cursor, Codex, DeepSeek Harness, and any other MCP-capable tool a **continuous memory that survives sessions**. It runs fully locally — your data never leaves your machine (default `~/.ai-cognition/`).
 
-## Why AiFP
+## Why AiFP — a brain, not a file cabinet
 
-- **Chinese-first retrieval** — `bge-small-zh-v1.5` embeddings (local, 512-dim) + CJK-aware FTS5 full-text search. Competitors are English-first; AiFP is built for Chinese.
-- **Perception chains (cloud)** — directional causal links (LEADS_TO / BECAUSE_OF / ENABLES / PREVENTS / RESPONSE_TO / CO_OCCURS_WITH), Hebbian co-occurrence, and BFS graph diffusion uncover knowledge that keyword search never will.
-- **Private by default** — SQLite database + local embeddings. No cloud, no account, no telemetry.
-- **One-command setup** — `npm install -g` auto-configures 10+ AI tools (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, pi-coding-agent).
+Most AI memory systems just **store** — a file cabinet you search. AiFP is built to **perceive, connect, and forget like a brain**:
+
+| Concept | What it does | Real capability |
+|---------|-------------|-----------------|
+| 🧠 **Hippocampus · perception** | New info is judged before it's stored | `observe_turn` → auto-recognizer decides what's worth remembering |
+| 👃 **Olfactory cortex · retrieval** | Find it even when you misspell it | Dual-path search: CJK FTS5 + `bge-small-zh` vector. Say "拍森", find Python |
+| 🗣 **Language cortex · understanding** | Understand what you meant, not just matched | Typo correction + disambiguation + Chinese time parsing ("上个月" → exact date) |
+| 🔗 **Synapses · perception chain** | Connect related info automatically | 6 causal relations (BECAUSE_OF / LEADS_TO / PREVENTS / ENABLES / RESPONSE_TO / CO_OCCURS_WITH) |
+| ⚡ **Hebbian neurons · association** | Neurons that fire together wire together | Co-occurrence matrix: ask about A, surface B |
+| 🌊 **Neural diffusion · recall** | Multi-hop discovery of indirect knowledge | BFS graph diffusion along the perception chain |
+| 🧬 **Synaptic consolidation · reinforcement** | The more you use it, the more important it becomes | Tier promotion: scratch → episodic → internalized → growth |
+| ⏳ **Forgetting curve** | Stale memories naturally decay | Time-based demotion & archival — the memory base never becomes a dump |
+| 📊 **Neural signal · confidence** | Every memory carries a trust signal | Confidence scoring, high-confidence surfaces first |
+| 👤 **Owner cognition model · profile** | Understands *you* — preferences, habits, facts | Preference/fact accumulation; AI suggestions are never mixed into your profile |
+| 💪 **Muscle memory · cross-turn** | Done work persists across sessions | Tool results & lessons are mined and reused |
+
+**Chinese-first**: built for Chinese. Competitors are English-first; AiFP's tokenizer, embeddings (`bge-small-zh`), typo rules, and temporal parser are all Chinese-native.
+
+**Private by default**: SQLite + local embeddings, no cloud, no account, no telemetry. Perception-chain deep tracing is server-enhanced (optional).
+
+**One-command setup**: `npm install -g` auto-configures 10+ AI tools (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent).
 
 ## Quick start
 

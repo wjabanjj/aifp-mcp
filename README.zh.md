@@ -6,12 +6,29 @@
 
 让 Claude Code、Cursor、Codex、DeepSeek Harness 等一切支持 MCP 的 AI 工具拥有**跨会话的持续记忆**。完全本地运行，数据不出本机（默认 `~/.ai-cognition/`）。
 
-## 为什么选 AiFP
+## 为什么选 AiFP — 是大脑，不是文件柜
 
-- **中文优先检索** — `bge-small-zh-v1.5` 向量嵌入（本地 512 维）+ CJK 感知的 FTS5 全文检索。竞品英文优先，AiFP 为中文而生。
-- **感知链（云端）** — 有向因果链（LEADS_TO / BECAUSE_OF / ENABLES / PREVENTS / RESPONSE_TO / CO_OCCURS_WITH）、Hebbian 共现、BFS 图扩散，能挖出关键词搜索永远找不到的知识。
-- **默认私有** — SQLite 数据库 + 本地嵌入，无云、无账号、无遥测。
-- **一条命令配好** — `npm install -g` 自动配置 10+ 个 AI 工具（Claude Code、Cursor、Windsurf、Cline、Gemini CLI、Qwen Code、Zed、VS Code Copilot、Codex CLI、Trae、pi-coding-agent）。
+多数 AI 记忆系统只是**存储**——一个供搜索的文件柜。AiFP 的目标是像大脑一样**感知、联结、遗忘**：
+
+| 概念 | 干什么 | 真实能力 |
+|------|--------|---------|
+| 🧠 **海马体 · 记忆感知** | 新信息先判断再存储 | `observe_turn` → 自动识别器判断值不值得记 |
+| 👃 **嗅觉皮层 · 语义检索** | 说错也能找到 | 双路检索：CJK FTS5 全文 + `bge-small-zh` 向量。说"拍森"能找到 Python |
+| 🗣 **语言中枢 · 理解** | 懂你说的意思，不只是匹配 | 错别字纠正 + 同义消歧 + 中文时间词解析（"上个月"→具体日期） |
+| 🔗 **神经元突触 · 感知链** | 相关信息自动建链 | 6 类因果关系（BECAUSE_OF / LEADS_TO / PREVENTS / ENABLES / RESPONSE_TO / CO_OCCURS_WITH） |
+| ⚡ **共燃神经元 · Hebbian 关联** | 一起出现的自动绑定 | 共现矩阵：问 A 带出 B |
+| 🌊 **神经扩散 · 联想回忆** | 多跳发现间接知识 | 沿感知链 BFS 图扩散 |
+| 🧬 **突触固化 · 记忆巩固** | 用得越多越重要 | 层级晋升：scratch → episodic → internalized → growth |
+| ⏳ **遗忘曲线** | 久不用的自然衰减 | 时间降级 + 归档——记忆库永不变成垃圾场 |
+| 📊 **神经信号 · 置信度** | 每条记忆带可信度 | 置信度评分，高置信优先 |
+| 👤 **主人认知模型 · 画像** | 懂你这个人——偏好、习惯、事实 | 偏好/事实自动积累；AI 建议绝不混入你的画像 |
+| 💪 **肌肉记忆 · 跨轮复用** | 做过的事跨会话记得 | 工具结果与经验沉淀复用 |
+
+**为中文而生**：tokenizer、嵌入（`bge-small-zh`）、纠错规则、时间词解析全部中文原生。竞品英文优先。
+
+**默认私有**：SQLite + 本地嵌入，无云、无账号、无遥测。感知链深度溯源为可选服务器增强。
+
+**一条命令配好**：`npm install -g` 自动配置 10+ 个 AI 工具（Claude Code、Cursor、Windsurf、Cline、Gemini CLI、Qwen Code、Zed、VS Code Copilot、Codex CLI、Trae、DeepSeek Harness、pi-coding-agent）。
 
 ## 快速开始
 
