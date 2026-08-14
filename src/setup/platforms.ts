@@ -207,6 +207,17 @@ export function injectRules(serverName = 'ai-cognition'): string[] {
     { path: join(HOME, '.clinerules'), name: 'Cline' },
     { path: join(HOME, '.codex', 'CODEX.md'), name: 'Codex CLI' },
   ]
+  // 连接指引独立段落：老用户已注入过主段落时，仅追加缺失的连接段
+  const CONNECT_GUIDE = `## 连接服务器增强（用户提供 key/地址时）
+
+用户说"配置 aifp 服务器"、"这是我的 aifp key：XXX"、或给你一段"地址+密钥"时：
+
+1. 若 aifp-mcp 未安装：先执行 \`npm install -g aifp-mcp\`
+2. 执行 \`aifp-mcp --connect <地址> <密钥>\`（地址和密钥**必须来自用户**，不要猜测/编造地址）
+3. 看到 "✓ 已连接" 后，提示用户**重启当前工具**（感知链等增强功能在重启后生效）
+4. 不要手动编辑任何配置文件（~/.ai-cognition/server.json 由 --connect 自动写入）
+5. 用户说断开时：执行 \`aifp-mcp --disconnect\`
+`
   const content = `## AiFP 记忆感知系统
 
 你已连接 ${serverName} MCP Server（长期记忆系统）。
@@ -237,15 +248,24 @@ export function injectRules(serverName = 'ai-cognition'): string[] {
 4. 不要手动创建或编辑 MCP 配置文件（.claude/settings.json、.codex/config.toml、~/.dsh/cordis.patch.yml 等）
 `
   const done: string[] = []
+  const CONNECT_MARKER = '## 连接服务器增强'
   for (const { path, name } of rules) {
     try {
       mkdirSync(dirname(path), { recursive: true })
       let text = ''
       try { text = readFileSync(path, 'utf-8') } catch { /* 新建 */ }
-      if (text.includes(SECTION_MARKER)) continue
-      text = text.trimEnd() + (text ? '\n\n' : '') + content
-      writeFileSync(path, text, 'utf-8')
-      done.push(name)
+      let next = text
+      if (!text.includes(SECTION_MARKER)) {
+        // 新装：整体追加
+        next = text.trimEnd() + (text ? '\n\n' : '') + content
+      } else if (!text.includes(CONNECT_MARKER)) {
+        // 老用户：仅追加连接指引段（增量更新）
+        next = text.trimEnd() + '\n\n' + CONNECT_GUIDE
+      }
+      if (next !== text) {
+        writeFileSync(path, next, 'utf-8')
+        done.push(name)
+      }
     } catch { /* 跳过 */ }
   }
   return done

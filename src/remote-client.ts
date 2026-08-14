@@ -101,16 +101,6 @@ class RemoteClient {
     return this.call('diffuse_memories', { graph, seedIds, maxHops })
   }
 
-  /** 手动触发识别器（flush_recognizer 工具） */
-  async flushRecognizer(): Promise<{ processed: number; written: number }> {
-    return this.call('flush_recognizer', {})
-  }
-
-  /** 从对话识别记忆（derive_memories 工具） */
-  async deriveMemories(messages: any[], sessionId?: string, project?: string): Promise<{ memories: any[] }> {
-    return this.call('derive_memories', { messages, sessionId, project })
-  }
-
   /** Hebbian 关联查询（get_related_memories 工具） */
   async getRelatedMemories(edges: any[], memId: string): Promise<{ memories: any[] }> {
     return this.call('get_related_memories', { edges, memId })

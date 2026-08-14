@@ -10,13 +10,9 @@ const dataDir = process.env['COGNITION_DATA_DIR'] || DEFAULT_DATA_DIR
 // 持久化服务器配置（aifp-mcp --connect 写入；env 显式配置优先）
 let persistedServer: { serverUrl: string; apiKey: string } | null = null
 try {
-  const p = join(dataDir, 'server.json')
-  if (existsSync(p)) {
-    const raw = JSON.parse(readFileSync(p, 'utf-8'))
-    if (raw && typeof raw.serverUrl === 'string' && raw.serverUrl.length > 0) {
-      persistedServer = { serverUrl: raw.serverUrl, apiKey: String(raw.apiKey || '') }
-    }
-  }
+  const { readServerConfig } = await import('./server-config.js')
+  const cfg = readServerConfig()
+  if (cfg) persistedServer = { serverUrl: cfg.serverUrl, apiKey: cfg.apiKey }
 } catch { /* 配置损坏则忽略，走默认本地 */ }
 
 export interface SourceDir {

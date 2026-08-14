@@ -14,8 +14,6 @@
   "include": ["src/**/*"],
   "exclude": [
     "src/server.ts",
-    "src/mcp-enhanced.ts",
-    "src/batch-link.ts",
-    "src/consolidator.ts"
+    "src/mcp-enhanced.ts"
   ]
 }
