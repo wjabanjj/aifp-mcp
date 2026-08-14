@@ -347,46 +347,53 @@ export async function handleRequest(req: JsonRpcRequest): Promise<JsonRpcRespons
         return { jsonrpc: '2.0', id, result: { memories: [], error: 'LLM 识别运行在客户端本地（使用用户配置的 key）' } }
       }
 
-      // ── get_related_memories：Hebbian 关联查询 ──
+      // ── get_related_memories：Hebbian 关联查询（无状态：用客户端发的边图） ──
       case 'get_related_memories': {
-        const { memId } = params
-        if (!memId) {
-          return { jsonrpc: '2.0', id, error: { code: -32602, message: 'memId required' } }
+        const { memId, edges } = params
+        if (!memId || !Array.isArray(edges)) {
+          return { jsonrpc: '2.0', id, error: { code: -32602, message: 'memId and edges[] required' } }
         }
-        try {
-          const { enrichWithAssociations } = await import('./association.js')
-          const { getDb } = await import('./db.js')
-          const db = getDb()
-          const seed = db.prepare('SELECT id, content, salience FROM memories WHERE (id = ? OR mem_id = ?) AND visibility = 1 LIMIT 1').all(memId, memId) as any[]
-          if (!seed.length) {
-            return { jsonrpc: '2.0', id, result: { memories: [] } }
-          }
-          const enriched = enrichWithAssociations('default', [{ id: seed[0].id, content: seed[0].content, salience: seed[0].salience }])
-          return {
-            jsonrpc: '2.0', id,
-            result: { memories: enriched.map(m => ({ id: m.id, content: m.content, salience: m.salience })) },
-          }
-        } catch (e: any) {
-          return { jsonrpc: '2.0', id, result: { memories: [], error: e.message } }
+        // 用客户端发的感知链边构建邻接图，返回 memId 的直接邻居
+        const neighbors = new Map<string, string>()
+        for (const e of edges) {
+          const s = e.source_id || e.sourceId
+          const t = e.target_id || e.targetId
+          if (!s || !t) continue
+          if (s === memId && !neighbors.has(t)) neighbors.set(t, e.relation_type || 'CO_OCCURS_WITH')
+          if (t === memId && !neighbors.has(s)) neighbors.set(s, e.relation_type || 'CO_OCCURS_WITH')
+        }
+        return {
+          jsonrpc: '2.0', id,
+          result: { memories: [...neighbors.entries()].map(([id, relation]) => ({ id, relation })) },
         }
       }
 
-      // ── get_perception_graph_stats：因果图统计 ──
+      // ── get_perception_graph_stats：因果图统计（无状态：用客户端发的边） ──
       case 'get_perception_graph_stats': {
-        try {
-          const { getDb } = await import('./db.js')
-          const db = getDb()
-          const nodes = (db.prepare('SELECT COUNT(*) as c FROM memories WHERE visibility = 1').all() as any[])[0]?.c || 0
-          const edges = (db.prepare('SELECT COUNT(*) as c FROM perception_links').all() as any[])[0]?.c || 0
-          const byType = db.prepare(
-            'SELECT relation_type, COUNT(*) as c FROM perception_links GROUP BY relation_type ORDER BY c DESC'
-          ).all() as any[]
-          return {
-            jsonrpc: '2.0', id,
-            result: { nodes, edges, relationDistribution: byType.map(r => ({ type: r.relation_type, count: r.c })) },
-          }
-        } catch (e: any) {
-          return { jsonrpc: '2.0', id, result: { error: e.message } }
+        const { edges } = params
+        if (!Array.isArray(edges)) {
+          return { jsonrpc: '2.0', id, error: { code: -32602, message: 'edges[] required' } }
+        }
+        const byType = new Map<string, number>()
+        const nodeSet = new Set<string>()
+        for (const e of edges) {
+          const s = e.source_id || e.sourceId
+          const t = e.target_id || e.targetId
+          if (s) nodeSet.add(s)
+          if (t) nodeSet.add(t)
+          const rel = e.relation_type || 'CO_OCCURS_WITH'
+          byType.set(rel, (byType.get(rel) || 0) + 1)
+        }
+        return {
+          jsonrpc: '2.0', id,
+          result: {
+            nodes: nodeSet.size,
+            edges: edges.length,
+            relationDistribution: [...byType.entries()]
+              .map(([type, count]) => ({ type, count }))
+              .sort((a, b) => b.count - a.count),
+            source: 'server',
+          },
         }
       }
 

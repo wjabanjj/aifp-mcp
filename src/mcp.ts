@@ -600,11 +600,13 @@ tools.set('find_perception_path', async (params) => {
 })
 
 tools.set('get_perception_graph_stats', async () => {
-  // remote 模式：服务器端统计因果图
+  // remote 模式：发本地边给服务器做无状态统计（服务器零存储，不读自身库）
   if (config.mode === 'remote') {
     try {
+      const { getDb: gdb } = await import('./db.js')
+      const edges = gdb().prepare('SELECT source_id, target_id, relation_type FROM perception_links').all() as any[]
       const { remoteClient } = await import('./remote-client.js')
-      const stats = await remoteClient.perceptionGraphStats()
+      const stats = await remoteClient.perceptionGraphStats(edges)
       return { ...stats, source: 'server' }
     } catch { /* 服务器不可用降级 */ }
   }
@@ -641,29 +643,42 @@ tools.set('get_related_memories', async (params) => {
       const edges = gdb().prepare('SELECT source_id, target_id, relation_type, confidence FROM perception_links').all() as any[]
       const { remoteClient } = await import('./remote-client.js')
       const result = await remoteClient.getRelatedMemories(edges, params.mem_id)
-      return { memories: result.memories || [], source: 'server' }
+      // 服务器返回邻居 id，补查本地内容
+      const { getDb } = await import('./db.js')
+      const db = getDb()
+      const rows = (result.memories || []).map((m: any) => {
+        const row = db.prepare('SELECT content, title, type FROM memories WHERE id = ? LIMIT 1').get(m.id) as any
+        return row ? { id: m.id, content: row.content, title: row.title, type: row.type, relation: m.relation } : null
+      }).filter(Boolean)
+      return { memories: rows, source: 'server' }
     } catch { /* 服务器不可用降级 */ }
   }
   // local 模式：本地 Hebbian 共现关联查询（空时回退感知链相邻节点，保证相关记忆可查）
   try {
-    const { getAssociatedMemoryIds } = await import('./association.js')
+    const { getAssociatedMemoryIds, enrichWithAssociations } = await import('./association.js')
     const { getDb } = await import('./db.js')
     const db = getDb()
-    let ids = getAssociatedMemoryIds(params.mem_id)
-    if (!ids.length) {
+    const seed = db.prepare(
+      'SELECT id, content, salience FROM memories WHERE (id = ? OR mem_id = ?) AND visibility = 1 LIMIT 1'
+    ).get(params.mem_id, params.mem_id) as { id: string; content: string; salience?: number } | undefined
+    if (!seed) return { memories: [], source: 'local' }
+    let enriched = enrichWithAssociations('default', [seed])
+    if (enriched.length <= 1) {
       // 回退：perception_links 直接相邻节点（感知链边也算关联）
       const neighbors = db.prepare(
         `SELECT source_id AS id FROM perception_links WHERE target_id = ?
          UNION SELECT target_id AS id FROM perception_links WHERE source_id = ?`
       ).all(params.mem_id, params.mem_id) as { id: string }[]
-      ids = neighbors.map(n => n.id)
+      if (neighbors.length) {
+        const ids = neighbors.map(n => n.id)
+        const placeholders = ids.map(() => '?').join(',')
+        const rows = db.prepare(
+          `SELECT id, mem_id, content, type, title, salience FROM memories WHERE id IN (${placeholders}) AND visibility = 1`
+        ).all(...ids) as any[]
+        return { memories: rows, source: 'local' }
+      }
     }
-    if (!ids.length) return { memories: [], source: 'local' }
-    const placeholders = ids.map(() => '?').join(',')
-    const rows = db.prepare(
-      `SELECT id, mem_id, content, type, title, salience FROM memories WHERE id IN (${placeholders}) AND visibility = 1`
-    ).all(...ids) as any[]
-    return { memories: rows, source: 'local' }
+    return { memories: enriched.slice(1), source: 'local' } // 去掉 seed 自身
   } catch (e: any) {
     return { memories: [], error: e?.message ?? String(e) }
   }

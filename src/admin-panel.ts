@@ -106,7 +106,7 @@ async function login() {
   else alert(j.error || '登录失败');
 }
 function showPanel(){ document.getElementById('login').classList.add('hidden'); document.getElementById('panel').classList.remove('hidden'); }
-function esc(s){ return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 async function createKey() {
   const username = document.getElementById('username').value.trim();
   const days = parseInt(document.getElementById('days').value) || 30;

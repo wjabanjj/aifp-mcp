@@ -82,7 +82,7 @@ export function isAuthorized(supplied: string): boolean {
   return constantTimeEqual(supplied, SINGLE_KEY)
 }
 
-/** 配额消费：鉴权通过后调用；返回剩余额度，<0 表示已超限 */
+/** 配额消费：鉴权通过后调用；返回剩余额度，<0 表示已超限。quota<=0 视为不限量 */
 export function consumeQuota(supplied: string): number {
   if (!KEYS_FILE) return 999999 // 单 key 模式不限
   const store = loadStore()
@@ -90,6 +90,7 @@ export function consumeQuota(supplied: string): number {
   for (const [user, k] of Object.entries(store.keys)) {
     if (k.expiresAt < Date.now()) continue
     if (!constantTimeEqual(supplied, k.key)) continue
+    if (k.quotaPerDay <= 0) return 999999 // 不限量
     let u = usage.get(user)
     if (!u || u.date !== todayStr) { u = { date: todayStr, used: 0 }; usage.set(user, u) }
     u.used++

@@ -99,9 +99,9 @@ The AI will run `aifp-mcp --connect` automatically and tell you to restart the t
 
 > ⚠️ The key appears in the conversation log. If that bothers you, revoke & reissue it from the admin panel afterward (doesn't affect usage).
 
-## MCP tools (31 total)
+## MCP tools (32 total)
 
-Core tools (12):
+Core tools (13):
 
 | Tool | Purpose | Chain |
 |------|---------|-------|
@@ -114,6 +114,7 @@ Core tools (12):
 | `diffuse_memories` | Multi-hop graph diffusion search | **Relational** |
 | `get_memory_tree` | Hierarchical tree structure | Core |
 | `get_related_memories` | Hebbian co-occurrence associations | **Relational** |
+| `get_user_profile` | User profile — aggregated preferences / facts / habits | **Profile** |
 | `observe_turn` | Queue a conversation turn for auto-recognition (cross-platform memory entry) | **Automatic** |
 | `reimport_sources` | Re-scan external notes directories | Import |
 | `get_stats` | System statistics | Core |

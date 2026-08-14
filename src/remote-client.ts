@@ -106,9 +106,9 @@ class RemoteClient {
     return this.call('get_related_memories', { edges, memId })
   }
 
-  /** 感知图统计（get_perception_graph_stats 工具） */
-  async perceptionGraphStats(): Promise<any> {
-    return this.call('get_perception_graph_stats', {})
+  /** 感知图统计（get_perception_graph_stats 工具）— 发本地边给服务器做无状态统计 */
+  async perceptionGraphStats(edges: any[]): Promise<any> {
+    return this.call('get_perception_graph_stats', { edges })
   }
 
 }
