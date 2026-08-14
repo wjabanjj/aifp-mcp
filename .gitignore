@@ -1,0 +1,38 @@
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# 本地数据（不入库）
+cognition.db
+cognition.db-shm
+cognition.db-wal
+.ai-cognition/
+hook.log
+
+# 环境与密钥
+.env
+.env.local
+
+# 测试/临时产物
+.bench-deep/
+.bench-tmp/
+.tmp/
+*.tgz
+verify-*.log
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 竞品反向研究目录（内部资料，不发布）
+其它源代码/
+
+# 内部文档（含密钥/竞品调研，不发布）
+认知架构.md
+认知部署.md
+竞品对比报告.md
+
+# 本机 MCP 配置（含绝对路径，不发布）
+.cursor/
+.mcp.json

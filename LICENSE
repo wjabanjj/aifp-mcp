@@ -1,0 +1,82 @@
+# AiFP 记忆感知系统 — 商业授权协议
+
+Copyright © 2026 aifp (8571806@qq.com)。保留所有权利。
+
+## English
+
+This software and its source code are **proprietary and confidential**. All rights reserved.
+
+### Grant of Use
+
+- **Personal / Non-commercial use**: Free. Individuals may install and use this
+  software for personal, non-commercial purposes on their own machines.
+- **Commercial use**: Requires a separate commercial license. "Commercial use"
+  includes, but is not limited to: use within any organization for business
+  purposes, use by a company or freelancer delivering paid services, reselling,
+  bundling, or embedding the software (in whole or in part) into any product
+  or service offered for a fee.
+- **Trial**: Commercial organizations may evaluate the software internally for
+  up to 30 days without a license.
+
+### Restrictions
+
+Unless authorized in writing by the copyright holder, you may NOT:
+
+1. Redistribute, sublicense, or publish the software or its source code,
+   modified or unmodified, in whole or in part.
+2. Use the software to provide memory-as-a-service, hosting, or managed
+   services to third parties.
+3. Remove or alter any copyright, trademark, or license notices.
+4. Reverse engineer, decompile, or attempt to derive the source code of
+   any compiled portion, except to the extent permitted by law.
+
+### Third-Party Components
+
+This package depends on third-party open-source packages
+(`@modelcontextprotocol/sdk`, `@anthropic-ai/sdk`, `@xenova/transformers`,
+`pinyin-pro`, etc.), which remain under their own respective licenses.
+This license applies only to the AiFP-specific code.
+
+### Warranty Disclaimer
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## 中文
+
+本软件及其源代码为**专有且保密**。保留所有权利。
+
+### 使用授权
+
+- **个人 / 非商业用途**：免费。个人可在自有设备上为本人的非商业目的安装和使用本软件。
+- **商业用途**：须另行获得商业授权。"商业用途"包括但不限于：任何组织内部用于经营目的、
+  公司或自由职业者提供收费服务、转售、捆绑或嵌入（全部或部分）到任何收费的产品或服务中。
+- **试用**：商业组织可在未获得授权的情况下在内部试用本软件最多 30 天。
+
+### 限制条款
+
+未经版权所有者书面授权，不得：
+
+1. 再分发、转授权或发布本软件及其源代码（修改或未修改，全部或部分）。
+2. 使用本软件向第三方提供"记忆即服务"、托管或管理型服务。
+3. 移除或篡改任何版权、商标或许可声明。
+4. 对任何编译部分进行逆向工程、反编译或试图推导源代码（法律允许的范围除外）。
+
+### 第三方组件
+
+本包依赖的第三方开源包（`@modelcontextprotocol/sdk`、`@anthropic-ai/sdk`、
+`@xenova/transformers`、`pinyin-pro` 等）仍遵循各自的开源许可。本协议仅适用于
+AiFP 自有代码。
+
+### 免责声明
+
+本软件按"现状"提供，不附带任何明示或暗示的担保，包括但不限于适销性、特定用途
+适用性和非侵权性的担保。在任何情况下，作者或版权持有人均不对因使用本软件而产生的
+任何索赔、损害或其他责任负责。

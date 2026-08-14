@@ -1,0 +1,15 @@
+---
+description: 自动记忆识别 — 每次对话后调用 observe_turn 记录重要信息
+globs: "*"
+---
+# ai-cognition: 自动记忆识别
+
+每次回答完用户后，调用 `observe_turn` MCP 工具记录用户的最后一条消息。
+
+规则：
+1. 每次回复完用户，调用 `observe_turn({ user_message: "用户最后一条消息" })`
+2. 如果返回 `{ queued: true }`，说明消息包含值得记住的信息（偏好、事实、决策、错误等），系统会自动识别并存储
+3. 如果返回 `{ queued: false }`，说明是普通交流，无需记录
+4. 不要代替用户调用 `save_memory` — 让 `observe_turn` 的自动识别决定什么值得记
+
+这是轻量操作（<5ms），不会影响对话流畅度。
