@@ -154,7 +154,7 @@ const toolDefinitions = [
   },
   {
     name: 'diffuse_memories',
-    description: '记忆扩散搜索——从一组记忆出发，沿关联关系向外多跳扩散，发现间接相关的知识。需要连接服务器进行加权扩散（按 relation_type 区分权重）；本地模式不可用。',
+    description: '记忆扩散搜索——从一组记忆出发，沿关联关系向外多跳扩散，发现间接相关的知识。本地模式：沿感知链边 1-3 跳简易扩散；连接服务器后：加权扩散（按 relation_type 区分权重，深度更大）。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -181,6 +181,16 @@ const toolDefinitions = [
         mem_id: { type: 'string', description: '记忆ID' },
       },
       required: ['mem_id'],
+    },
+  },
+  {
+    name: 'get_user_profile',
+    description: '获取用户画像——聚合记忆中关于用户本人的偏好、事实、习惯类信息。当需要了解用户的完整背景（喜欢什么、不喜欢什么、身份事实、习惯）时调用，比 search_memories 更全面；AI 建议/结论类记忆不会混入画像。本地可用。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        limit: { type: 'integer', default: 20, description: '每类最多返回条数' },
+      },
     },
   },
   {
@@ -613,7 +623,40 @@ tools.set('diffuse_memories', async (params) => {
     } catch {}
   }
 
-  return { nodes: [], message: '记忆扩散需要连接服务器，本地模式不可用' }
+  // 本地：简易 BFS 图扩散（沿感知链边 1-3 跳），强化版在服务器端
+  try {
+    const db = gdb()
+    const edges = db.prepare('SELECT source_id, target_id, relation_type FROM perception_links').all() as any[]
+    const adj = new Map<string, { id: string; rel: string }[]>()
+    for (const e of edges) {
+      for (const [a, b] of [[e.source_id, e.target_id], [e.target_id, e.source_id]] as const) {
+        if (!adj.has(a)) adj.set(a, [])
+        adj.get(a)!.push({ id: b, rel: e.relation_type })
+      }
+    }
+    const maxHops = Math.min(params.max_hops || 2, 3)
+    const seeds: string[] = Array.isArray(params.seed_ids) ? params.seed_ids : []
+    const visited = new Set<string>(seeds)
+    const queue: { id: string; depth: number }[] = seeds.map(s => ({ id: s, depth: 0 }))
+    const nodes: { memoryId: string; relation: string; depth: number; content?: string; title?: string }[] = []
+    while (queue.length) {
+      const cur = queue.shift()!
+      if (cur.depth >= maxHops) continue
+      for (const nb of adj.get(cur.id) || []) {
+        if (visited.has(nb.id)) continue
+        visited.add(nb.id)
+        nodes.push({ memoryId: nb.id, relation: nb.rel, depth: cur.depth + 1 })
+        queue.push({ id: nb.id, depth: cur.depth + 1 })
+      }
+    }
+    for (const n of nodes) {
+      const row = db.prepare('SELECT content, title FROM memories WHERE id = ? LIMIT 1').get(n.memoryId) as { content?: string; title?: string } | undefined
+      if (row) { n.content = row.content; n.title = row.title }
+    }
+    return { nodes, source: 'local' }
+  } catch (e) {
+    return { nodes: [], error: (e as Error)?.message, source: 'local' }
+  }
 })
 
 tools.set('get_memory_tree', async () => {
@@ -656,6 +699,25 @@ tools.set('get_related_memories', async (params) => {
   } catch (e: any) {
     return { memories: [], error: e?.message ?? String(e) }
   }
+})
+
+tools.set('get_user_profile', async (params) => {
+  const { getDb } = await import('./db.js')
+  const db = getDb()
+  const limit = params.limit || 20
+  // 用户画像：仅聚合用户本人的偏好/事实/习惯类记忆；
+  // AI 建议/结论类记忆在保存时已被 hasAIContamination 拦截，不进入画像
+  const groups = ['preference', 'fact', 'observation']
+  const profile: Record<string, any[]> = {}
+  for (const type of groups) {
+    const rows = db.prepare(
+      `SELECT id, mem_id, content, title, salience, confidence, updated_at
+       FROM memories WHERE type = ? AND visibility = 1 AND hidden_at IS NULL
+       ORDER BY salience DESC, updated_at DESC LIMIT ?`
+    ).all(type, limit) as any[]
+    if (rows.length) profile[type] = rows
+  }
+  return { profile, source: 'local' }
 })
 
 tools.set('get_stats', async () => {
