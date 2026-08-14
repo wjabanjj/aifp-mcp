@@ -26,6 +26,7 @@ export function getDb(): DatabaseSync {
 
   _db = new DatabaseSync(config.dbPath)
   _db.exec('PRAGMA journal_mode=WAL')
+  _db.exec('PRAGMA busy_timeout=5000') // 多 AI 工具进程并发写时等待而非报锁
   _db.exec('PRAGMA foreign_keys=ON')
   initSchema(_db)
   return _db
