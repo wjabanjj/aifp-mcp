@@ -1,0 +1,39 @@
+# npm 发布黑名单兜底（files 白名单之外的双保险）
+# 即使 files 匹配失误，以下内容也绝不上传
+
+# 数据与隐私
+*.db
+*.db-shm
+*.db-wal
+.ai-cognition/
+server.json
+keys.txt
+keys.json
+
+# 服务器构建产物
+dist-server/
+src/server.ts
+src/server-keys.ts
+src/admin-panel.ts
+src/mcp-enhanced.ts
+
+# 内部文档（含敏感信息/竞品调研）
+docs/
+认知架构.md
+认知部署.md
+竞品对比报告.md
+
+# 竞品源码（侵权风险）
+其它源代码/
+
+# 测试与临时产物
+.bench-deep/
+.bench-tmp/
+benchmark-report.json
+*.log
+*.tmp
+
+# 本机配置
+.cursor/
+.mcp.json
+.git/

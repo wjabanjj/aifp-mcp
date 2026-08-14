@@ -26,10 +26,8 @@
     "hooks/",
     "rules/",
     "README.md",
-    "README.zh.md",
     "LICENSE",
-    "package.json",
-    "CHANGELOG.md"
+    "package.json"
   ],
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

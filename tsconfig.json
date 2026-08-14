@@ -9,11 +9,17 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*"
+  ],
   "exclude": [
     "src/server.ts",
-    "src/mcp-enhanced.ts"
+    "src/mcp-enhanced.ts",
+    "src/admin-panel.ts",
+    "src/server-keys.ts"
   ]
 }
