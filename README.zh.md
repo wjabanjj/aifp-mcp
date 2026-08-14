@@ -142,13 +142,12 @@ Claude Code 使用原生 hooks（100% 自动，零遗漏）。其他工具通过
 - **BFS 图扩散**（沿关联多跳发现间接知识）
 - **纠错 + 消歧 + 中文时间词解析**
 
-## 一键配置所有 AI 助手
+## 各 AI 工具怎么接入（自动或手动）
 
-`npm install -g aifp-mcp` 时自动执行（postinstall），无需手动操作。手动运行：
+`npm install -g aifp-mcp` 时自动完成（postinstall 检测所有已装 AI 工具并写入 MCP 配置）。**以后新装了某个 AI 工具**，跑一次即可接入：
 
 ```bash
-node dist/setup/index.js     # npm 安装后
-npx tsx src/setup/index.ts   # 源码模式
+aifp-mcp --setup   # 重新检测并配置所有 AI 工具
 ```
 
 自动检测并配置已安装的 AI 工具（检测到才写入，不重复覆盖）：

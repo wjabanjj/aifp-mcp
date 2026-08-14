@@ -142,13 +142,12 @@ The instruction files tell the AI: *"After answering, call `observe_turn` to rec
 - **BFS graph diffusion** (multi-hop discovery of indirect knowledge)
 - **Typo correction + disambiguation + Chinese temporal-phrase parsing**
 
-## One-command setup for all AI assistants
+## How AI tools connect (auto or manual)
 
-`npm install -g aifp-mcp` runs postinstall automatically. To run it manually:
+**Installed during `npm install -g` (postinstall)** — every detected AI tool gets the MCP config automatically. Later, when you install a NEW AI tool, just run:
 
 ```bash
-node dist/setup/index.js     # after npm install
-npx tsx src/setup/index.ts   # from source
+aifp-mcp --setup   # re-detect & configure all AI tools
 ```
 
 It detects installed AI tools (writes only what it finds, never overwrites):

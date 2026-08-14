@@ -50,6 +50,13 @@ if (process.argv.includes('--disconnect')) {
   process.exit(0)
 }
 
+// --setup：重新检测并配置所有 AI 工具（新装工具后跑一次即可接入）
+if (process.argv.includes('--setup')) {
+  const { configureAll } = await import('./setup/index.js')
+  configureAll()
+  process.exit(0)
+}
+
 // 启动 MCP Server（stdin/stdout MCP 协议）
 const mcp = await import('./mcp.js')
 await mcp.startStdioServer()
