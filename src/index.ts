@@ -31,7 +31,7 @@ if (process.argv.includes('--connect')) {
   const apiKey = process.argv[idx + 2]
   if (!serverUrl || !serverUrl.startsWith('http') || !apiKey || apiKey.length < 16) {
     console.error('用法: aifp-mcp --connect <服务器地址> <API密钥>')
-    console.error('示例: aifp-mcp --connect https://memory.aifp.com 你的64位密钥')
+    console.error('示例: aifp-mcp --connect https://<服务器地址> 你的64位密钥')
     process.exit(1)
   }
   const { connectToServer } = await import('./server-config.js')
