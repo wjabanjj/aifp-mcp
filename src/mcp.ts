@@ -290,6 +290,20 @@ const toolDefinitions = [
     },
   },
   {
+    name: 'export_memories_md',
+    description: '把记忆导出为 Markdown 笔记（带 frontmatter），写入指定目录——配合 Obsidian 等笔记软件使用，在 Obsidian 里能看到全部记忆。当用户想把记忆同步到 Obsidian vault 时调用。本地可用。',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        directory: { type: 'string', description: '目标目录（如 Obsidian vault 下的子目录）' },
+        type: { type: 'string', description: '按类型筛选（如 preference/fact）' },
+        tier: { type: 'string', description: '按层级筛选' },
+        limit: { type: 'integer', default: 200, description: '最多导出条数' },
+      },
+      required: ['directory'],
+    },
+  },
+  {
     name: 'explain_query',
     description: '解释检索结果路径分解：展示每条记忆来自哪些路径（FTS/向量/实体/时间/关键词）以及分数构成。当需要理解"为什么这条记忆被检索到"、排查检索质量时调用。',
     inputSchema: {
@@ -873,6 +887,24 @@ tools.set('export_memories', async (params) => {
   let data
   try { data = JSON.parse(json) } catch { data = [] }
   return { data }
+})
+
+tools.set('export_memories_md', async (params) => {
+  const { exportMemoriesAsMd } = await import('./export-md.js')
+  if (!params.directory || typeof params.directory !== 'string') {
+    return { error: 'directory 是必需的（如 Obsidian vault 下的目录）' }
+  }
+  try {
+    const r = exportMemoriesAsMd({
+      directory: params.directory,
+      type: params.type,
+      tier: params.tier,
+      limit: params.limit,
+    })
+    return { written: r.written, directory: r.directory, sample: r.sample }
+  } catch (e) {
+    return { error: (e as Error)?.message }
+  }
 })
 
 tools.set('explain_query', async (params) => {

@@ -99,7 +99,23 @@ The AI will run `aifp-mcp --connect` automatically and tell you to restart the t
 
 > ⚠️ The key appears in the conversation log. If that bothers you, revoke & reissue it from the admin panel afterward (doesn't affect usage).
 
-## MCP tools (32 total)
+### Obsidian integration (notes ↔ memory, both ways)
+
+**Obsidian notes → memory** (AI can semantically search your vault):
+
+```bash
+export COGNITION_SOURCES="C:/Users/you/Obsidian/MyVault"   # point to your vault
+# Auto-imported on startup; ask your AI to call reimport_sources anytime for incremental sync
+```
+
+**Memory → Obsidian notes** (see all memories inside Obsidian): ask your AI to call `export_memories_md`:
+
+> Export memories to Obsidian: directory = C:/Users/you/Obsidian/MyVault/AiFP-memory
+
+Exported notes carry frontmatter (type/tier/tags) that Obsidian recognizes; same-name notes are overwritten to stay in sync with the memory base.
+
+
+## MCP tools (33 total)
 
 Core tools (13):
 
@@ -119,7 +135,7 @@ Core tools (13):
 | `reimport_sources` | Re-scan external notes directories | Import |
 | `get_stats` | System statistics | Core |
 
-Plus 19 management tools: `get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`.
+Plus 19 management tools: `get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md` (Obsidian) / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`.
 
 ## Automatic memory across platforms
 

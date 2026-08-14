@@ -99,7 +99,23 @@ AI 会自动执行 `aifp-mcp --connect` 并提示你重启工具。重启后感�
 
 > ⚠️ key 会出现在对话记录中，介意的话配置完可在管理后台吊销重发（不影响使用）。
 
-## MCP 工具（共 32 个）
+### 接入 Obsidian（笔记 ↔ 记忆双向）
+
+**Obsidian 笔记 → 记忆库**（AI 可语义检索你的笔记）：
+
+```bash
+export COGNITION_SOURCES="C:/Users/你/Obsidian/我的笔记库"   # 指向 vault
+# 之后启动自动导入；或让 AI 随时调用 reimport_sources 增量导入
+```
+
+**记忆库 → Obsidian 笔记**（在 Obsidian 里看到全部记忆）：让 AI 调用 `export_memories_md`：
+
+> 把记忆导出到 Obsidian：directory = C:/Users/你/Obsidian/我的笔记库/AiFP记忆
+
+导出的笔记带 frontmatter（type/tier/tags），Obsidian 可直接识别和检索；同名笔记自动覆盖更新，保持与记忆库同步。
+
+
+## MCP 工具（共 33 个）
 
 核心工具（13 个）：
 
@@ -119,7 +135,7 @@ AI 会自动执行 `aifp-mcp --connect` 并提示你重启工具。重启后感�
 | `reimport_sources` | 重新扫描外部笔记目录 | 导入 |
 | `get_stats` | 系统统计 | 基础 |
 
-另有 19 个管理/进阶工具：`get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`。
+另有 20 个管理/进阶工具：`get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md`（Obsidian）/ `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`。
 
 ## 跨平台自动记忆识别
 
