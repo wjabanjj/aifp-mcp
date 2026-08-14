@@ -47,14 +47,23 @@ export async function importSources(sources?: string[], projectPath?: string): P
     }
   }
 
-  const supported = ['.md', '.txt', '.json', '.jsonl', '.ts', '.js', '.yaml', '.yml', '.toml']
+/** 剥离 YAML frontmatter（Obsidian 等 Markdown 笔记标准头） */
+function stripFrontmatter(text: string): string {
+  if (!text.startsWith('---')) return text
+  const end = text.indexOf('\n---', 3)
+  if (end === -1) return text
+  return text.slice(end + 4).trimStart()
+}
+
+const supported = ['.md', '.txt', '.json', '.jsonl', '.ts', '.js', '.yaml', '.yml', '.toml']
 
   for (const fp of targets) {
     const ext = extname(fp).toLowerCase()
     if (!supported.includes(ext)) { result.skipped++; continue }
 
     try {
-      const content = readFileSync(fp, 'utf-8').slice(0, 5000)
+      const raw = readFileSync(fp, 'utf-8').slice(0, 5000)
+      const content = stripFrontmatter(raw) // Obsidian 等笔记的 YAML frontmatter 剥离
       if (!content.trim()) { result.skipped++; continue }
 
       const fileName = basename(fp)
