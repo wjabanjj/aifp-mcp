@@ -48,7 +48,9 @@ AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`�
 
 本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。设置 `COGNITION_SERVER_URL` + `COGNITION_API_KEY` 后自动启用。
 
-## 12 个 MCP 工具
+## MCP 工具（共 31 个）
+
+核心工具（12 个）：
 
 | 工具 | 功能 | 链路 |
 |------|------|------|
@@ -64,6 +66,8 @@ AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`�
 | `observe_turn` | 记录对话轮次到识别队列（跨平台自动记忆入口） | **自动** |
 | `reimport_sources` | 重新扫描外部笔记目录 | 导入 |
 | `get_stats` | 系统统计 | 基础 |
+
+另有 19 个管理/进阶工具：`get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`。
 
 ## 跨平台自动记忆识别
 

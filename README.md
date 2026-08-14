@@ -48,7 +48,9 @@ AiFP runs in two modes (env `COGNITION_MODE`, default `remote`):
 
 Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. Set `COGNITION_SERVER_URL` + `COGNITION_API_KEY` to enable them.
 
-## 12 MCP tools
+## MCP tools (31 total)
+
+Core tools (12):
 
 | Tool | Purpose | Chain |
 |------|---------|-------|
@@ -64,6 +66,8 @@ Local mode is fully private (data never leaves your machine) but **perception-ch
 | `observe_turn` | Queue a conversation turn for auto-recognition (cross-platform memory entry) | **Automatic** |
 | `reimport_sources` | Re-scan external notes directories | Import |
 | `get_stats` | System statistics | Core |
+
+Plus 19 management tools: `get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`.
 
 ## Automatic memory across platforms
 
