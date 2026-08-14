@@ -16,7 +16,7 @@ All notable changes to **aifp-mcp** (AiFP 记忆感知系统).
 - `COGNITION_SKIP_VECTOR=1`：服务器纯算法不加载向量模型
 - nginx 反代 + 根路径重定向；管理面板路径可配置
 - 密钥管理：keys.json 多用户 + 有效期 + 配额 + 热吊销
-- 实际部署：腾讯云 43.143.222.90，PM2 守护，端到端验证通过
+- 实际部署：生产服务器，PM2 守护，端到端验证通过
 
 ### 🐛 修复
 - dsh 配置硬编码 `COGNITION_MODE: local` 覆盖 --connect remote（已修）

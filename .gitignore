@@ -37,3 +37,13 @@ Thumbs.db
 .cursor/
 .mcp.json
 dist-server/
+
+# 运行时生成的密钥/配置（绝不上传）
+keys.json
+keys.txt
+admin.json
+server.json
+*.json.tmp
+
+# 服务器本地数据
+data/

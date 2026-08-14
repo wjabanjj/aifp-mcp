@@ -1,4 +1,4 @@
-// @deploy server — 服务端模块，仅在腾讯服务器运行，不发布到 npm
+// @deploy server — 服务端模块，服务端模块，不随 npm 包发布
 /**
  * Recognizer Scheduler — 记忆识别的调度层
  *

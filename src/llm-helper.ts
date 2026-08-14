@@ -1,4 +1,4 @@
-// @deploy server — 服务端模块，仅在腾讯服务器运行，不发布到 npm
+// @deploy server — 服务端模块，服务端模块，不随 npm 包发布
 /**
  * LLM API 调用器 — 支持工具调用的非流式 LLM 调用
  * 用于 Recognizer 后台任务。

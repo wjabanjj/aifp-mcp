@@ -1,4 +1,4 @@
-// @deploy server — 服务端模块，仅在腾讯服务器运行，不发布到 npm
+// @deploy server — 服务端模块，服务端模块，不随 npm 包发布
 /**
  * Recognizer — LLM 驱动的记忆识别器
  *

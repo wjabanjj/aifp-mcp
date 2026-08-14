@@ -1,8 +1,8 @@
-// @deploy server — 服务端模块，仅在腾讯服务器运行，不发布到 npm
+// @deploy server — 服务端模块，服务端模块，不随 npm 包发布
 /**
  * mcp-enhanced.ts — 服务端增强版 handleRequest
  * 在 mcp.ts 的 baseHandleRequest 基础上增加所有算法逻辑端点
- * 此文件仅部署在腾讯服务器上，不进入 npm 包
+ * 此文件服务端模块，不随 npm 包发布
  *
  * 包含所有核心逻辑：搜索排序、感知链、扩散、关联、合并等
  * 客户端只发数据，逻辑全在服务端

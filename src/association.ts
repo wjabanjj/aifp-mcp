@@ -1,4 +1,4 @@
-// @deploy server — 服务端模块，仅在腾讯服务器运行，不发布到 npm
+// @deploy server — 服务端模块，服务端模块，不随 npm 包发布
 /**
  * Hebbian 记忆关联（共现增强）
  * "Cells that fire together, wire together"
