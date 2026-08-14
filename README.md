@@ -101,12 +101,11 @@ The AI will run `aifp-mcp --connect` automatically and tell you to restart the t
 
 ### Obsidian integration (notes ↔ memory, both ways)
 
-**Obsidian notes → memory** (AI can semantically search your vault):
+**Obsidian notes → memory** (AI can semantically search your vault): just ask your AI — **no env vars needed**:
 
-```bash
-export COGNITION_SOURCES="C:/Users/you/Obsidian/MyVault"   # point to your vault
-# Auto-imported on startup; ask your AI to call reimport_sources anytime for incremental sync
-```
+> Import my Obsidian notes into memory: directory = C:/Users/you/Obsidian/MyVault
+
+The AI calls `reimport_sources` to sync (frontmatter stripped, hash-deduped). Say it again when you add notes.
 
 **Memory → Obsidian notes** (see all memories inside Obsidian): ask your AI to call `export_memories_md`:
 

@@ -203,10 +203,12 @@ const toolDefinitions = [
   },
   {
     name: 'reimport_sources',
-    description: '重新扫描 COGNITION_SOURCES 目录，将新增/修改的 .md/.json 文件导入记忆库。内容哈希去重，不会产生重复。用户新加了笔记后调用此工具。',
+    description: '导入记忆来源：扫描指定目录（如 Obsidian vault 路径）或 COGNITION_SOURCES 配置的目录，把 .md/.json 等文件导入记忆库（frontmatter 自动剥离）。内容哈希去重不重复。用户新增了笔记后调用此工具同步。',
     inputSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        directory: { type: 'string', description: '要导入的目录（如 Obsidian vault 路径）。不填则扫描 COGNITION_SOURCES 配置的目录' },
+      },
     },
   },
   {
@@ -738,14 +740,17 @@ tools.set('get_stats', async () => {
   }
 })
 
-tools.set('reimport_sources', async () => {
+tools.set('reimport_sources', async (params) => {
   const { importSources } = await import('./import.js')
-  const result = await importSources()
+  const result = params?.directory
+    ? await importSources([params.directory])
+    : await importSources()
   return {
     imported: result.imported,
     updated: result.updated,
     skipped: result.skipped,
     total_scanned: result.imported + result.updated + result.skipped,
+    directory: params?.directory || 'COGNITION_SOURCES',
   }
 })
 

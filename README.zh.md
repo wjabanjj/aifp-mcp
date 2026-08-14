@@ -101,12 +101,11 @@ AI 会自动执行 `aifp-mcp --connect` 并提示你重启工具。重启后感�
 
 ### 接入 Obsidian（笔记 ↔ 记忆双向）
 
-**Obsidian 笔记 → 记忆库**（AI 可语义检索你的笔记）：
+**Obsidian 笔记 → 记忆库**（AI 可语义检索你的笔记）：直接让你的 AI 导入，**无需配置环境变量**：
 
-```bash
-export COGNITION_SOURCES="C:/Users/你/Obsidian/我的笔记库"   # 指向 vault
-# 之后启动自动导入；或让 AI 随时调用 reimport_sources 增量导入
-```
+> 把 Obsidian 笔记导入记忆：directory = C:/Users/你/Obsidian/我的笔记库
+
+AI 会调用 `reimport_sources` 同步导入（frontmatter 自动剥离、哈希去重）。以后新增笔记再说一次即可。
 
 **记忆库 → Obsidian 笔记**（在 Obsidian 里看到全部记忆）：让 AI 调用 `export_memories_md`：
 
