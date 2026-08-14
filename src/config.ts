@@ -1,10 +1,23 @@
 // @deploy npm — 客户端模块，随 npm 分发到用户本地
 import { join } from 'path'
 import { homedir } from 'os'
+import { existsSync, readFileSync } from 'fs'
 
 // 作为 npm 全局包运行时，默认存 ~/.ai-cognition/
 const DEFAULT_DATA_DIR = join(homedir(), '.ai-cognition')
 const dataDir = process.env['COGNITION_DATA_DIR'] || DEFAULT_DATA_DIR
+
+// 持久化服务器配置（aifp-mcp --connect 写入；env 显式配置优先）
+let persistedServer: { serverUrl: string; apiKey: string } | null = null
+try {
+  const p = join(dataDir, 'server.json')
+  if (existsSync(p)) {
+    const raw = JSON.parse(readFileSync(p, 'utf-8'))
+    if (raw && typeof raw.serverUrl === 'string' && raw.serverUrl.length > 0) {
+      persistedServer = { serverUrl: raw.serverUrl, apiKey: String(raw.apiKey || '') }
+    }
+  }
+} catch { /* 配置损坏则忽略，走默认本地 */ }
 
 export interface SourceDir {
   path: string
@@ -24,14 +37,14 @@ export const config = {
   /** 外部记忆来源目录 — 启动时自动扫描导入 .md/.json 文件 */
   sourceDirs: [] as SourceDir[],
 
-  /** 运行模式：remote = 调服务器增强（默认）；local = 仅本地 */
-  mode: (process.env['COGNITION_MODE'] || 'remote') as 'local' | 'remote',
+  /** 运行模式：remote = 调服务器增强；local = 仅本地（默认）。--connect 后可持久化为 remote */
+  mode: (process.env['COGNITION_MODE'] || (persistedServer ? 'remote' : 'local')) as 'local' | 'remote',
 
-  /** 远程服务器地址（remote 模式）— 无默认值，须用户显式配置；不内置具体服务器地址 */
-  serverUrl: process.env['COGNITION_SERVER_URL'] || '',
+  /** 远程服务器地址（remote 模式）— env 优先，其次持久化配置；不内置具体服务器地址 */
+  serverUrl: process.env['COGNITION_SERVER_URL'] || persistedServer?.serverUrl || '',
 
-  /** API 密钥 — remote 模式下必须设置。无默认值，不硬编码 */
-  apiKey: process.env['COGNITION_API_KEY'] || '',
+  /** API 密钥 — remote 模式下必须设置。env 优先，其次持久化配置 */
+  apiKey: process.env['COGNITION_API_KEY'] || persistedServer?.apiKey || '',
 
   /** 监听端口（server.ts 用） */
   port: parseInt(process.env['PORT'] || '5000', 10),

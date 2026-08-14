@@ -63,17 +63,27 @@ AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`�
 | **感知链**（追踪/寻路/图统计/扩散） | ❌ | ✅ depth=8 BFS |
 | **记忆提炼**（derive_memories） | ⚠️ 需自配 LLM key | ⚠️ 同样需自配 LLM key（成本归用户） |
 
-本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。服务器地址不随包分发（防攻击），需通过官方接入渠道获取：
+本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。服务器地址不随包分发（防攻击），需通过官方接入渠道获取。
 
-```bash
-# 启用服务器增强（需先获得接入地址和密钥）
-export COGNITION_MODE=remote
-export COGNITION_SERVER_URL=<官方提供的地址>
-export COGNITION_API_KEY=<官方提供的密钥>
-npx aifp-mcp
-```
+### 拿到 key 后，一条命令连上
 
 > 接入地址和密钥通过官方渠道发放：**联系作者（微信/QQ/邮箱：<此处填你的联系方式>）订阅后发放**，不随包公开。订阅到期可单独吊销，不影响其他用户。
+
+```bash
+# 1. 安装（如未安装）
+npm install -g aifp-mcp
+
+# 2. 一条命令连接服务器（地址和 key 由作者发放）
+aifp-mcp --connect https://<官方地址> <你的64位key>
+
+# 3. 重启你的 AI 工具（Claude Code / Cursor / dsh 等）
+#    感知链 / 深度追踪 / 图扩散自动可用
+
+# 断开（恢复纯本地）：
+# aifp-mcp --disconnect
+```
+
+`--connect` 会把连接信息保存在本机 `~/.ai-cognition/server.json`，之后启动自动生效，无需每次配置环境变量。
 
 ## MCP 工具（共 31 个）
 

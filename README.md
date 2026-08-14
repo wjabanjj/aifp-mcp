@@ -58,22 +58,32 @@ AiFP runs in two modes (env `COGNITION_MODE`, default `remote`):
 | Save / read / list memories | ✅ | ✅ |
 | Dual-path search (FTS5 + vector) | ✅ | ✅ + Z-score fusion ranking |
 | Hebbian co-occurrence (`get_related_memories`) | ✅ | ✅ (fuller) |
-| Auto-recognition (`observe_turn` → recognizer) | ⚠️ needs your own LLM key | ✅ server LLM, zero config |
+| Auto-recognition (`observe_turn` → recognizer) | ⚠️ needs your own LLM key | ⚠️ same (LLM cost is user-side) |
 | Recall (`recall_context`) | basic retrieval only | ✅ + perception-chain tracing |
 | **Perception chains** (trace / path / graph stats / diffusion) | ❌ | ✅ depth-8 BFS |
-| **Memory derivation** (`derive_memories`) | ❌ | ✅ server LLM |
+| **Memory derivation** (`derive_memories`) | ⚠️ needs your LLM key | ⚠️ same (LLM cost is user-side) |
 
-Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. The server address is not shipped with the package (anti-attack); get it through the official channel:
+Local mode is fully private (data never leaves your machine) but **perception-chain tools require the server**. The server address is not shipped with the package (anti-attack); get it through the official channel.
 
-```bash
-# Enable server enhancement (requires address + key from the official channel)
-export COGNITION_MODE=remote
-export COGNITION_SERVER_URL=<official address>
-export COGNITION_API_KEY=<official key>
-npx aifp-mcp
-```
+### One command to connect (after you have a key)
 
 > Access address and key are distributed through the official channel: **contact the author (WeChat / QQ / email: <fill in your contact>) to subscribe** — never bundled in this package. Subscriptions can be revoked individually without affecting other users.
+
+```bash
+# 1. Install (if not yet)
+npm install -g aifp-mcp
+
+# 2. Connect to the server (address + key from the author)
+aifp-mcp --connect https://<official-address> <your-64-char-key>
+
+# 3. Restart your AI tool (Claude Code / Cursor / dsh / ...)
+#    Perception chains / deep tracing / graph diffusion become available
+
+# Disconnect (back to pure local):
+# aifp-mcp --disconnect
+```
+
+`--connect` persists the connection in `~/.ai-cognition/server.json` — no need to set env vars every time.
 
 ## MCP tools (31 total)
 
