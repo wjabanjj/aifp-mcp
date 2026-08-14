@@ -31,7 +31,13 @@ let _loadedMtimeMs = 0
 /** 配额用量（内存态：date 用于每日重置） */
 const usage = new Map<string, { date: string; used: number }>()
 
-function today(): string { return new Date().toISOString().slice(0, 10) }
+/** 配额重置按本地时区（非 UTC）：中国用户北京时间零点重置，受 TZ 环境变量影响 */
+function today(): string {
+  const d = new Date()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${day}`
+}
 
 function loadStore(): KeysFile {
   if (!KEYS_FILE || !existsSync(KEYS_FILE)) return { keys: {} }
