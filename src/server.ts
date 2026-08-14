@@ -129,8 +129,8 @@ async function main() {
     const cors = corsHeadersFor(req)
     const headers = { ...cors, ...SECURITY_HEADERS }
 
-    // 管理面板路由（/admin*）
-    if (req.url?.startsWith('/admin')) {
+    // 管理面板路由（/mm*）
+    if (req.url?.startsWith('/mm')) {
       const { handleAdmin } = await import('./admin-panel.js')
       if (await handleAdmin(req, res, new URL(req.url, 'http://localhost'))) return
     }
@@ -144,6 +144,13 @@ async function main() {
     }
 
     if (req.method !== 'POST') {
+      // 根路径 GET：友好提示（API 服务说明 + 管理面板入口），其他非 POST 才 405
+      const pathname = req.url ? new URL(req.url, 'http://localhost').pathname : '/'
+      if (req.method === 'GET' && (pathname === '/' || pathname === '')) {
+        res.writeHead(200, { ...headers, 'content-type': 'text/html; charset=utf-8' })
+        res.end('<html><head><meta charset="utf-8"><title>AiFP 记忆感知 API</title></head><body style="font-family:system-ui;max-width:600px;margin:80px auto;padding:0 20px;color:#333"><h1>🧠 AiFP 记忆感知系统</h1><p>这是算法增强 API 服务（POST JSON-RPC），供客户端 <code>aifp-mcp --connect</code> 调用。</p><p>📋 管理面板：<a href="/mm">/mm</a>（生成/吊销用户 key）</p><p>🔒 API 需要 <code>Authorization: Bearer &lt;key&gt;</code> 鉴权。</p></body></html>')
+        return
+      }
       res.writeHead(405, headers)
       res.end('Method not allowed')
       return

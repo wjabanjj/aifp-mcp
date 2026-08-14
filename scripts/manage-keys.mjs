@@ -3,7 +3,7 @@
  * AiFP 服务器密钥管理（运营方用，兼容管理面板 keys.json）
  *
  * 用法：
- *   node scripts/manage-keys.mjs add <用户名> [天数=30] [每日配额=2000] [key文件路径]
+ *   node scripts/manage-keys.mjs add <用户名> [天数=30] [每日配额=3000] [key文件路径]
  *   node scripts/manage-keys.mjs list [key文件路径]
  *   node scripts/manage-keys.mjs revoke <用户名> [key文件路径]
  *   node scripts/manage-keys.mjs gen            # 仅生成随机 key（不写入）
@@ -39,7 +39,7 @@ switch (cmd) {
   case 'add': {
     if (!arg) { console.error('用法: manage-keys.mjs add <用户名> [天数] [每日配额]'); process.exit(1) }
     const days = parseInt(p2) || 30
-    const quota = parseInt(p3) || 2000
+    const quota = parseInt(p3) || 3000
     const store = load(file)
     if (store.keys[arg]) { console.error(`用户 ${arg} 已存在`); process.exit(1) }
     const key = genKey()

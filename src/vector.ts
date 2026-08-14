@@ -32,6 +32,11 @@ class VectorEngine {
   get initStarted(): boolean { return this._started }
 
   async init(): Promise<void> {
+    // 服务器（纯算法）跳过向量：COGNITION_SKIP_VECTOR=1 时不再尝试加载 transformers
+    if (process.env['COGNITION_SKIP_VECTOR'] === '1') {
+      this._started = true
+      return
+    }
     if (this.ready) return
     if (this._failCount >= this._maxRetries) throw new Error('向量引擎已超过最大重试次数')
     if (this.initPromise) return this.initPromise

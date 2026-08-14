@@ -65,6 +65,7 @@ function allEntries(): KeyInfo[] {
     const used = u && u.date === todayStr ? u.used : 0
     out.push({ user, key: k.key, expiresAt: k.expiresAt, quotaPerDay: k.quotaPerDay, usedToday: used, createdAt: k.createdAt })
   }
+  out.sort((a, b) => b.createdAt - a.createdAt) // 最新生成的排最上
   return out
 }
 
@@ -117,6 +118,27 @@ export function revokeKey(username: string): boolean {
   usage.delete(username)
   persist()
   return true
+}
+
+/** 续期：在现有到期时间基础上增加天数（已过期则从当前时间起算） */
+export function renewKey(username: string, days: number): { expiresAt: string } | null {
+  const store = loadStore()
+  const k = store.keys[username]
+  if (!k) return null
+  const base = k.expiresAt > Date.now() ? k.expiresAt : Date.now()
+  k.expiresAt = base + days * 86400000
+  persist()
+  return { expiresAt: new Date(k.expiresAt).toISOString().slice(0, 10) }
+}
+
+/** 修改每日配额 */
+export function updateQuota(username: string, quotaPerDay: number): { quotaPerDay: number } | null {
+  const store = loadStore()
+  const k = store.keys[username]
+  if (!k) return null
+  k.quotaPerDay = Math.min(Math.max(quotaPerDay, 0), 100000)
+  persist()
+  return { quotaPerDay: k.quotaPerDay }
 }
 
 export function listKeys(): KeyInfo[] {

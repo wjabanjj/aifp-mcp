@@ -185,7 +185,6 @@ const platforms: Platform[] = [
           `        args: ['${entry}']`,
           `        cwd: '${root}'`,
           '        env:',
-          '          COGNITION_MODE: local',
           '          COGNITION_RECOGNIZER: "1"',
           '',
         ].join('\n')
