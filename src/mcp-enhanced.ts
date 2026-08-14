@@ -337,44 +337,14 @@ export async function handleRequest(req: JsonRpcRequest): Promise<JsonRpcRespons
 
       // ── flush_recognizer：手动触发识别器 ──
       case 'flush_recognizer': {
-        try {
-          const { flushNow } = await import('./recognizer-scheduler.js')
-          const result = await flushNow()
-          return { jsonrpc: '2.0', id, result }
-        } catch (e: any) {
-          return { jsonrpc: '2.0', id, result: { error: e.message } }
-        }
+        // 识别器运行在客户端本地（使用用户配置的 LLM key），服务器不提供识别服务
+        return { jsonrpc: '2.0', id, result: { error: '识别器运行在客户端本地（使用用户配置的 LLM key），服务器不提供识别服务' } }
       }
 
       // ── derive_memories：从对话识别记忆（LLM） ──
       case 'derive_memories': {
-        const { messages, sessionId, project } = params
-        if (!Array.isArray(messages) || messages.length === 0) {
-          return { jsonrpc: '2.0', id, error: { code: -32602, message: 'messages[] required' } }
-        }
-        try {
-          const { runRecognizerBatch } = await import('./recognizer.js')
-          const userText = messages.filter((m: any) => m?.role === 'user').map((m: any) => String(m.content || '')).join('\n')
-          if (!userText.trim()) {
-            return { jsonrpc: '2.0', id, result: { memories: [] } }
-          }
-          const written = await runRecognizerBatch([{
-            userMessage: userText.slice(0, 2000),
-            sessionId: sessionId || undefined,
-            project: project || undefined,
-          }])
-          return {
-            jsonrpc: '2.0', id,
-            result: {
-              memories: written.map(w => ({
-                mem_id: w.mem_id, type: w.type, content: w.content,
-                action: w.action, id: w.id,
-              })),
-            },
-          }
-        } catch (e: any) {
-          return { jsonrpc: '2.0', id, result: { memories: [], error: e.message } }
-        }
+        // 同上：LLM 识别运行在客户端本地
+        return { jsonrpc: '2.0', id, result: { memories: [], error: 'LLM 识别运行在客户端本地（使用用户配置的 key）' } }
       }
 
       // ── get_related_memories：Hebbian 关联查询 ──

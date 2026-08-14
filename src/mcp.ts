@@ -378,7 +378,7 @@ const toolDefinitions = [
   },
   {
     name: 'derive_memories',
-    description: '从对话中识别并保存长期记忆。需要连接服务器（服务器 LLM 识别）；本地模式不可用。',
+    description: '从对话中识别并保存长期记忆。本地运行（需配置 COGNITION_LLM_API_KEY 或 ANTHROPIC_API_KEY）。',
     inputSchema: {
       type: 'object',
       properties: {
@@ -970,27 +970,31 @@ tools.set('session_mine', async (params) => {
 })
 
 tools.set('derive_memories', async (params) => {
-  // remote 模式：发消息给服务器做 LLM 识别
-  if (config.mode === 'remote') {
-    try {
-      const { remoteClient } = await import('./remote-client.js')
-      const result = await remoteClient.deriveMemories(params.messages, params.session_id, params.project)
-      return { memories: result.memories || [], source: 'server' }
-    } catch { /* 服务器不可用降级 */ }
+  // 识别运行在客户端本地（使用用户配置的 LLM key），服务器提供纯算法增强
+  // （识别器依赖 COGNITION_LLM_API_KEY / ANTHROPIC_API_KEY 环境变量）
+  try {
+    const { runRecognizerBatch } = await import('./recognizer.js')
+    const userText = (params.messages || [])
+      .filter((m: any) => m?.role === 'user')
+      .map((m: any) => String(m.content || ''))
+      .join('\n')
+    if (!userText.trim()) return { memories: [] }
+    const written = await runRecognizerBatch([{
+      userMessage: userText.slice(0, 2000),
+      sessionId: params.session_id || undefined,
+      project: params.project || undefined,
+    }])
+    return {
+      memories: written.map(w => ({ mem_id: w.mem_id, type: w.type, content: w.content, action: w.action, id: w.id })),
+      source: 'local',
+    }
+  } catch (e: any) {
+    return { memories: [], error: (e as Error)?.message || String(e) }
   }
-  return { error: 'LLM 记忆识别需要连接服务器，本地模式不可用' }
 })
 
 tools.set('flush_recognizer', async (_params) => {
-  // remote 模式：服务器端跑识别器（服务器持有 recognizer）
-  if (config.mode === 'remote') {
-    try {
-      const { remoteClient } = await import('./remote-client.js')
-      const result = await remoteClient.flushRecognizer()
-      return { ...result, source: 'server' }
-    } catch { /* 服务器不可用降级 */ }
-  }
-  // local 模式：本地识别器（llm-helper 支持 OpenAI 兼容 / Anthropic）
+  // 识别运行在客户端本地（使用用户配置的 LLM key）
   try {
     const { flushNow } = await import('./recognizer-scheduler.js')
     const result = await flushNow()

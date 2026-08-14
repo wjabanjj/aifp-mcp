@@ -58,10 +58,10 @@ AiFP 支持两种运行模式（环境变量 `COGNITION_MODE`，默认 `remote`�
 | 保存 / 读取 / 列出记忆 | ✅ | ✅ |
 | 双路检索（FTS5 + 向量） | ✅ | ✅ + Z-score 融合排序 |
 | Hebbian 共现（get_related_memories） | ✅ | ✅（更完整） |
-| 自动识别（observe_turn → 识别器） | ⚠️ 需自配 LLM key | ✅ 服务器 LLM，零配置 |
+| 自动识别（observe_turn → 识别器） | ⚠️ 需自配 LLM key | ⚠️ 同样需自配 LLM key（成本归用户，服务器不做 LLM） |
 | 一键回忆（recall_context） | 仅基础检索 | ✅ + 感知链深度溯源 |
 | **感知链**（追踪/寻路/图统计/扩散） | ❌ | ✅ depth=8 BFS |
-| **记忆提炼**（derive_memories） | ❌ | ✅ 服务器 LLM |
+| **记忆提炼**（derive_memories） | ⚠️ 需自配 LLM key | ⚠️ 同样需自配 LLM key（成本归用户） |
 
 本地模式完全私有（数据不出本机），但**感知链工具需要连接服务器**。设置 `COGNITION_SERVER_URL` + `COGNITION_API_KEY` 后自动启用。
 

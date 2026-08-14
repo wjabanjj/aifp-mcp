@@ -60,12 +60,7 @@ if (allowedOrigin) {
 async function main() {
   await initServer()
 
-  // ── 启动后台调度器（记忆识别轮询 + 关联加载 + 整理周期） ──
-  try {
-    const { startScheduler } = await import('./recognizer-scheduler.js')
-    startScheduler()
-  } catch (e) { console.error('[记忆感知] 识别调度器启动失败:', (e as Error)?.message) }
-
+  // ── 后台调度：仅 Hebbian 关联加载（识别器运行在客户端本地） ──
   try {
     const { initMemoryAssociations } = await import('./association.js')
     initMemoryAssociations()
