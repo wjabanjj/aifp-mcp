@@ -85,6 +85,18 @@ aifp-mcp --connect https://<官方地址> <你的64位key>
 
 `--connect` 会把连接信息保存在本机 `~/.ai-cognition/server.json`，之后启动自动生效，无需每次配置环境变量。
 
+### 更简单：直接让你的 AI 配置
+
+不需要手动敲命令。在 Claude Code / Cursor / Codex / dsh 等任何 AI 工具的输入框里说：
+
+> 这是我的 aifp 服务器地址和 key，帮我配置：
+> 地址：https://<官方地址>
+> key：<你的64位key>
+
+AI 会自动执行 `aifp-mcp --connect` 并提示你重启工具。重启后感知链增强自动生效。
+
+> ⚠️ key 会出现在对话记录中，介意的话配置完可在管理后台吊销重发（不影响使用）。
+
 ## MCP 工具（共 31 个）
 
 核心工具（12 个）：

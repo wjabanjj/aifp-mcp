@@ -217,6 +217,16 @@ export function injectRules(serverName = 'ai-cognition'): string[] {
 - 用户说新增了笔记 → \`reimport_sources\`
 - 需要综合回顾 → \`recall_context\`
 
+## 连接服务器增强（用户提供 key/地址时）
+
+用户说"配置 aifp 服务器"、"这是我的 aifp key：XXX"、或给你一段"地址+密钥"时：
+
+1. 若 aifp-mcp 未安装：先执行 \`npm install -g aifp-mcp\`
+2. 执行 \`aifp-mcp --connect <地址> <密钥>\`（地址和密钥**必须来自用户**，不要猜测/编造地址）
+3. 看到 "✓ 已连接" 后，提示用户**重启当前工具**（感知链等增强功能在重启后生效）
+4. 不要手动编辑任何配置文件（~/.ai-cognition/server.json 由 --connect 自动写入）
+5. 用户说断开时：执行 \`aifp-mcp --disconnect\`
+
 ## 安装/重装引导（用户要求时）
 
 用户说"安装/重装/升级记忆系统"或"npm install -g aifp-mcp"时：

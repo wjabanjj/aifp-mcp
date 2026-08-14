@@ -85,6 +85,18 @@ aifp-mcp --connect https://<official-address> <your-64-char-key>
 
 `--connect` persists the connection in `~/.ai-cognition/server.json` — no need to set env vars every time.
 
+### Even simpler: let your AI configure it
+
+No need to type commands. In Claude Code / Cursor / Codex / dsh or any AI tool's chat, just say:
+
+> Here are my aifp server address and key, please configure:
+> Address: https://<official-address>
+> Key: <your-64-char-key>
+
+The AI will run `aifp-mcp --connect` automatically and tell you to restart the tool. Perception-chain enhancement takes effect after restart.
+
+> ⚠️ The key appears in the conversation log. If that bothers you, revoke & reissue it from the admin panel afterward (doesn't affect usage).
+
 ## MCP tools (31 total)
 
 Core tools (12):
