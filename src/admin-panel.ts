@@ -72,7 +72,7 @@ const LOGIN_FAIL_LIMIT = 2        // 允许 2 次错误
 const IP_LOCK_MS = 60 * 60 * 1000  // 锁定 1 小时
 
 function clientIp(req: IncomingMessage): string {
-  // nginx 反代后 remoteAddress 是 127.0.0.1，必须用 x-forwarded-for
+  // nginx 反代后 remoteAddress 是内网地址，必须用 x-forwarded-for
   const fwd = (req.headers['x-forwarded-for'] as string) || ''
   return fwd.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown'
 }
