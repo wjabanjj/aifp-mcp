@@ -2,7 +2,7 @@
 
 Persistent memory for AI coding assistants via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
-[中文文档](./README.zh.md) · [npm](https://www.npmjs.com/package/aifp-mcp)
+[中文文档](./README.zh.md) · [npm](https://www.npmjs.com/package/aifp-mcp) · [GitHub](https://github.com/wjabanjj/aifp-mcp)
 
 Give Obsidian, DeepSeek Harness, Claude Code, Cursor, Codex, and any other MCP-capable tool **continuous memory across sessions**. It runs fully locally — your data never leaves your machine (default `~/.ai-cognition/`).
 

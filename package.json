@@ -3,6 +3,14 @@
   "version": "1.5.6",
   "description": "AiFP Cognitive Memory — persistent memory MCP server for AI assistants. Chinese-first retrieval with causal chains, Hebbian associations and graph diffusion. 记忆感知系统",
   "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wjabanjj/aifp-mcp.git"
+  },
+  "homepage": "https://github.com/wjabanjj/aifp-mcp",
+  "bugs": {
+    "url": "https://github.com/wjabanjj/aifp-mcp/issues"
+  },
   "type": "module",
   "main": "dist/index.js",
   "bin": {

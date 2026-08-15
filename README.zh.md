@@ -2,7 +2,7 @@
 
 通过 [Model Context Protocol](https://modelcontextprotocol.io/) 为 AI 编程助手提供持久记忆。
 
-[English](./README.md) · [npm](https://www.npmjs.com/package/aifp-mcp)
+[English](./README.md) · [npm](https://www.npmjs.com/package/aifp-mcp) · [GitHub](https://github.com/wjabanjj/aifp-mcp)
 
 让 Obsidian、Deepseek Harness、Claude Code、Cursor、Codex、DeepSeek Harness 等一切支持 MCP 的 AI 工具拥有**跨会话的持续记忆**。完全本地运行，数据不出本机（默认 `~/.ai-cognition/`）。
 
