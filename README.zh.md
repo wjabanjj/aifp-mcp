@@ -4,7 +4,7 @@
 
 [English](./README.md) · [npm](https://www.npmjs.com/package/aifp-mcp) · [GitHub](https://github.com/wjabanjj/aifp-mcp)
 
-让 Obsidian、Deepseek Harness、Claude Code、Cursor、Codex、DeepSeek Harness 等一切支持 MCP 的 AI 工具拥有**跨会话的持续记忆**。完全本地运行，数据不出本机（默认 `~/.ai-cognition/`）。
+让 Obsidian、DeepSeek Harness、Claude Code、Cursor、Codex 等一切支持 MCP 的 AI 工具拥有**跨会话的持续记忆**。完全本地运行，数据不出本机（默认 `~/.ai-cognition/`）。
 
 ## 为什么选 AiFP — 一套记忆，所有 AI 共享
 
@@ -138,7 +138,7 @@ AI 会调用 `reimport_sources` 同步导入（frontmatter 自动剥离、哈希
 
 ## MCP 工具（共 33 个）
 
-核心工具（13 个）：
+核心工具（15 个）：
 
 | 工具 | 功能 | 链路 |
 |------|------|------|
@@ -158,7 +158,7 @@ AI 会调用 `reimport_sources` 同步导入（frontmatter 自动剥离、哈希
 | `reimport_sources` | 重新扫描外部笔记目录 | 导入 |
 | `get_stats` | 系统统计 | 基础 |
 
-另有 20 个管理/进阶工具：`get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md`（Obsidian）/ `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`。
+另有 18 个管理/进阶工具：`consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md`（Obsidian）/ `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine` / `derive_memories` / `flush_recognizer`。
 
 ## 跨平台自动记忆识别
 

@@ -138,7 +138,7 @@ Exported notes carry frontmatter (type/tier/tags) that Obsidian recognizes; same
 
 ## MCP tools (33 total)
 
-Core tools (13):
+Core tools (15):
 
 | Tool | Purpose | Chain |
 |------|---------|-------|
@@ -158,7 +158,7 @@ Core tools (13):
 | `reimport_sources` | Re-scan external notes directories | Import |
 | `get_stats` | System statistics | Core |
 
-Plus 20 management tools: `get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md` (Obsidian) / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`.
+Plus 18 management tools: `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md` (Obsidian) / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine` / `derive_memories` / `flush_recognizer`.
 
 ## Automatic memory across platforms
 
