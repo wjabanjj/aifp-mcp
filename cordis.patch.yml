@@ -1,0 +1,18 @@
+# AiFP 记忆感知系统 — DeepSeek Harness (dsh) 组合包配置层
+#
+# 安装方式：dsh plugin --profile <name> add aifp-mcp
+# 或在 dsh 配置里声明本 bundle。
+#
+# 本层通过 dsh 内置的 MCP 客户端插件拉起 aifp-mcp 的 MCP server，
+# 并把全部记忆工具注册为 mcp__aifp__* 供模型使用。
+#
+# 工具名示例：mcp__aifp__search_memories、mcp__aifp__save_memory 等
+
+- insert:
+    - id: mcp-aifp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: aifp
+        transport: stdio
+        command: npx
+        args: ['-y', 'aifp-mcp']

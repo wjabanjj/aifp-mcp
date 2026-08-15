@@ -63,6 +63,16 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 
 重启 Claude Code 即可使用。数据存在 `~/.ai-cognition/data/cognition.db`。
 
+### DeepSeek Harness (dsh) 一键安装
+
+AiFP 是官方 `dsh-plugin` 生态组合包，一条命令装进 dsh：
+
+```bash
+dsh plugin --profile <你的profile名> add aifp-mcp
+```
+
+装完重启 dsh，记忆工具会自动注册为 `mcp__aifp__*`（如 `mcp__aifp__search_memories`、`mcp__aifp__save_memory`），无需手动改任何配置。
+
 ### 在任意 AI 对话中安装（推荐）
 
 不需要手动配任何东西。在 Claude Code、Codex、Cursor、DeepSeek Harness 等任意工具里直接输入：
