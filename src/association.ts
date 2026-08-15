@@ -12,8 +12,22 @@ const coRetrievalMap = new Map<string, Map<string, Map<string, number>>>()
 let _assocReady = false
 
 const ASSOCIATION_THRESHOLD = 0.25
+// 单条记忆最多保留的关联数上限。
+// 防止共现矩阵指数爆炸（一批 N 条记忆全排列 = N×(N-1)/2 个关联对）。
+// 超过上限时只保留强度最高的 N 条，淘汰最弱的，保证表规模线性有界。
+const MAX_ASSOC_PER_MEM = 30
 
 // ── 本地保底算法（core 降级 — 简单共现计数，无概率转移） ──
+
+/** 把关联 Map 裁剪到单条记忆上限内（保留强度最高的 N 条） */
+function trimAssociations(assocMap: Map<string, number>): void {
+  if (assocMap.size <= MAX_ASSOC_PER_MEM) return
+  const sorted = [...assocMap.entries()].sort((a, b) => b[1] - a[1])
+  assocMap.clear()
+  for (const [id, strength] of sorted.slice(0, MAX_ASSOC_PER_MEM)) {
+    assocMap.set(id, strength)
+  }
+}
 
 function strengthenPairs(
   userMap: Map<string, Map<string, number>>,
@@ -77,6 +91,8 @@ function saveCoRetrievalMap(): void {
     const rows: { userId: string; memA: string; memB: string; strength: number }[] = []
     for (const [userId, userMap] of coRetrievalMap) {
       for (const [memA, assocMap] of userMap) {
+        // 写入前先裁剪，保证落库表也受 MAX_ASSOC_PER_MEM 约束
+        trimAssociations(assocMap)
         for (const [memB, str] of assocMap) {
           if (memA < memB && str >= ASSOCIATION_THRESHOLD) {
             rows.push({ userId, memA, memB, strength: +str.toFixed(3) })

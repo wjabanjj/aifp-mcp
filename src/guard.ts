@@ -15,6 +15,10 @@ export const GUARD_PROJECT_RE = /项目|任务|目标|计划|打算|下(?:一步
 export const TOOL_NOISE_TAG_RE = /<task-notification>|<task-id>|<task-result>|<tool-use-id>|<tool-result>/i
 export const TOOL_NOISE_CMD_RE = /background command/i
 export const TOOL_NOISE_EXIT_RE = /(?:completed|finished|finished with|exited with).{0,20}exit code \d+|^exit code \d+/i
+// 代码堆栈 / 调试输出噪音：函数名|文件名:行号、管道符分隔的调试段等。这些不该进长期记忆。
+export const TOOL_NOISE_STACK_RE = /\b[\w./-]+\.(?:ts|js|jsx|tsx|cjs|mjs|py|go|rs):\d+\b/i
+// 多个管道符分隔的调试标识符段，如 `| autoCompactConversation | auto-compact.ts`
+export const TOOL_NOISE_PIPE_RE = /(?:^|\s)\|[\s\S]*\|[\s\S]*(?:\.ts|\.js|\.tsx|\.jsx|:\d+|\b[A-Za-z]+\(\))/i
 
 /** 判断是否为工具/系统通知噪音（如 Claude 后台任务完成通知） */
 export function isToolNoise(text: string): boolean {
@@ -26,6 +30,10 @@ export function isToolNoise(text: string): boolean {
   if (TOOL_NOISE_CMD_RE.test(t) && TOOL_NOISE_EXIT_RE.test(t)) return true
   // 独立成段的 exit code 通知（可能被截断）
   if (/^[\s\S]{0,30}exit code \d+[\s\S]{0,10}$/i.test(t) && /completed|finished|done|exit/i.test(t)) return true
+  // 代码堆栈 / 调试输出（文件名:行号）
+  if (TOOL_NOISE_STACK_RE.test(t)) return true
+  // 管道符分隔的调试信息段
+  if (TOOL_NOISE_PIPE_RE.test(t)) return true
   return false
 }
 
@@ -33,6 +41,8 @@ export function isToolNoise(text: string): boolean {
 export function hasMemorySignal(text: string): boolean {
   if (!text || !text.trim()) return false
   const msg = text.trim()
+  // 任何长度的文本都先过滤工具/调试噪音，噪音一律不算记忆信号
+  if (isToolNoise(msg)) return false
   if (EXPLICIT_MEMORY_RE.test(msg)) return true
   if (msg.length >= 20) return true
   if (msg.length >= 8) {

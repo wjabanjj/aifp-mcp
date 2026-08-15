@@ -4,33 +4,55 @@ Persistent memory for AI coding assistants via the [Model Context Protocol](http
 
 [中文文档](./README.zh.md) · [npm](https://www.npmjs.com/package/aifp-mcp)
 
-AiFP gives Obsidian, Claude Code, Cursor, Codex, DeepSeek Harness, and any other MCP-capable tool a **continuous memory that survives sessions**. It runs fully locally — your data never leaves your machine (default `~/.ai-cognition/`).
+Give Obsidian, DeepSeek Harness, Claude Code, Cursor, Codex, and any other MCP-capable tool **continuous memory across sessions**. It runs fully locally — your data never leaves your machine (default `~/.ai-cognition/`).
 
-## Why AiFP — a brain, not a file cabinet — one shared memory for all your desktop agents
+## Why AiFP — one brain, one shared memory for all your AI tools
 
-Most AI memory systems just **store** — a file cabinet you search. AiFP is built to **perceive, connect, and forget like a brain**:
+Are you tired of AI's "amnesia"?
 
-| Concept | What it does | Real capability |
-|---------|-------------|-----------------|
-| 🧠 **Hippocampus · perception** | New info is judged before it's stored | `observe_turn` → auto-recognizer decides what's worth remembering |
-| 👃 **Olfactory cortex · retrieval** | Find it even when you misspell it | Dual-path search: CJK FTS5 + `bge-small-zh` vector. Say "拍森", find Python |
-| 🗣 **Language cortex · understanding** | Understand what you meant, not just matched | Typo correction + disambiguation + Chinese time parsing ("上个月" → exact date) |
-| 🔗 **Synapses · perception chain** | Connect related info automatically | 6 causal relations (BECAUSE_OF / LEADS_TO / PREVENTS / ENABLES / RESPONSE_TO / CO_OCCURS_WITH) |
-| ⚡ **Hebbian neurons · association** | Neurons that fire together wire together | Co-occurrence matrix: ask about A, surface B |
-| 🌊 **Neural diffusion · recall** | Multi-hop discovery of indirect knowledge | BFS graph diffusion along the perception chain |
-| 🧬 **Synaptic consolidation · reinforcement** | The more you use it, the more important it becomes | Tier promotion: scratch → episodic → internalized → growth |
-| ⏳ **Forgetting curve** | Stale memories naturally decay | Time-based demotion & archival — the memory base never becomes a dump |
-| 📊 **Neural signal · confidence** | Every memory carries a trust signal | Confidence scoring, high-confidence surfaces first |
-| 👤 **Owner cognition model · profile** | Understands *you* — preferences, habits, facts | Preference/fact accumulation; AI suggestions are never mixed into your profile |
-| 💪 **Muscle memory · cross-turn** | Done work persists across sessions | Tool results & lessons are mined and reused |
+- You chat all morning, it forgets the project name — **stored, but useless**
+- You say "拍森" (pinyin for Python), it only understands "Python" — **one typo and it can't find it**
+- Yesterday it was "can't connect to Docker", today it's "can't connect to MySQL" — it doesn't know they're the same thing — **related memories never connect**
+- What DeepSeek Harness learned today, Claude Code doesn't know — **every AI is a memory island**
 
-**Chinese-first**: built for Chinese. Competitors are English-first; AiFP's tokenizer, embeddings (`bge-small-zh`), typo rules, and temporal parser are all Chinese-native.
+Most AI memory systems just **store** — they store, but you can't use it. AiFP makes AI actually **remember, connect, and share**, solving all of the above at once.
 
-**Private by default**: SQLite + local embeddings, no cloud, no account, no telemetry. Perception-chain deep tracing is server-enhanced (optional).
+**What others can't do (sharing):**
 
-**One-command setup**: `npm install -g` auto-configures 10+ AI tools (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent).
+> **One memory, shared by all AI tools.** What DeepSeek Harness learns today, Claude Code still remembers tomorrow; the preferences Codex collected, VS Code Copilot never needs to ask again. Other memory systems can't do this — each one keeps its own records, completely isolated. AiFP gives every AI tool on the same machine one shared brain — **remember once, use everywhere**.
 
-**One brain, many assistants**: all your AI tools share the same local memory. What Claude learns today, Cursor remembers tomorrow — one memory, zero duplication.
+**Why it's good (capabilities):**
+
+- **Judges what to remember** — not every sentence gets stored. Messages go into a "pending zone" first, and a recognizer decides whether it's worth long-term memory: worth it → formally saved; not worth it → skipped. No hoarding everything, no missing the important stuff.
+- **Understands human speech** — say "拍森", it knows you mean Python; say "上个月" (last month), it knows exactly which month. Typos, colloquialisms, time phrases — all understood.
+- **Sees connections** — "can't connect to database" yesterday and "changed the config, still broken" today are recognized as the same ongoing issue. It can also chain from one clue to related content.
+- **Clean storage, useful retrieval** — each memory keeps only its core meaning, no junk piled on. When retrieving, only the most relevant few are surfaced — fast and tidy.
+- **Knows you better over time** — your preferences and habits gradually accumulate into a "profile", but it distinguishes *facts* from *suggestions* and never mixes your thoughts with its own.
+- **Forgets what should be forgotten** — rarely-used memories naturally fade; important ones grow stronger. The memory base stays clean forever — never becomes a dump you can't search.
+
+**These names tell you it's serious** — memory is built like a brain:
+
+| Concept | What it does (plain language) |
+|---------|-------------------------------|
+| 🧠 **Hippocampus · perception** | Judges what to remember — messages go to a "pending zone", the recognizer decides, only worth-it ones are formally stored |
+| 🔗 **Synapses · perception chain** | Automatically discovers connections between information and traces the most direct relationships |
+| 👃 **Olfactory cortex · semantic retrieval** | Finds it even when misspelled — say "拍森", it knows you're looking for Python |
+| ⚡ **Hebbian neurons · association** | Things that appear together get bound together — ask about A, surface B |
+| 🗣 **Language cortex · understanding** | Understands colloquial speech, recognizes typos, knows which month "上个月" is |
+| 🌊 **Neural diffusion · associative recall** | One clue can recall several layers of related memories |
+| 🧬 **Synaptic consolidation · reinforcement** | The more it's used, the stronger it gets — gradually promoted from temporary to long-term memory |
+| ⏳ **Forgetting curve** | Rarely-used memories naturally fade; the memory base stays clean and never piles up |
+| 📊 **Neural signal · confidence** | Every memory carries a trust score — the more reliable, the higher it surfaces |
+| 👤 **Owner cognition model · profile** | Understands *you* — preferences and habits accumulate into a profile, never mixed with its own thoughts |
+| 💪 **Muscle memory · cross-turn reuse** | Lessons from past work persist across sessions — no relearning from scratch |
+
+**Built for Chinese first**: typo tolerance, colloquial understanding, time-phrase parsing — all designed for Chinese. English-first memory systems fall flat when you say "拍森" looking for Python.
+
+**Private by default**: all data lives on your machine — no cloud, no account, no telemetry. The "sharing" only means multiple tools read/write the same local memory — **your data never leaves this computer**.
+
+**One-command setup**: `npm install -g` auto-configures 12 AI tools (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent).
+
+**One brain, many assistants**: what DeepSeek Harness learns today, Claude Code remembers tomorrow — like talking to a colleague with a memory, no need to re-introduce yourself every time.
 
 ## Quick start
 
@@ -41,17 +63,17 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 
 Restart Claude Code and you're done. Data lives in `~/.ai-cognition/data/cognition.db`.
 
-### Install from any AI assistant's chat
+### Install from any AI assistant's chat (recommended)
 
-You don't need to configure anything manually. In Claude Code, Codex, Cursor, DeepSeek Harness, or any other tool, just ask:
+You don't need to configure anything manually. In Claude Code, Codex, Cursor, DeepSeek Harness, or any other tool, just type:
 
 > Install my memory system: `npm install -g aifp-mcp`
 
-The `postinstall` hook **auto-configures every detected AI tool** (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent) and prints a status report. Restart the tool and memory tools are available. The agent will see the report and tell you what to restart — no manual MCP configuration needed.
+The `postinstall` hook **auto-detects and configures every installed AI tool** (Claude Code, Cursor, Windsurf, Cline, Gemini CLI, Qwen Code, Zed, VS Code Copilot, Codex CLI, Trae, DeepSeek Harness, pi-coding-agent) and prints a status report. Restart the tool and memory tools are available — the AI sees the report and tells you which one to restart. **No manual MCP config file editing needed.**
 
 > **First launch**: downloads a ~30 MB embedding model (bge-small-zh), blocking up to 45 s. Later launches are instant (cached).
 
-## Server-enhanced mode
+## Local mode vs server-enhanced mode
 
 AiFP runs in two modes (env `COGNITION_MODE`, default `remote`):
 
@@ -112,10 +134,12 @@ Core tools (13):
 |------|---------|-------|
 | `save_memory` | Save a memory (auto-dedup + vector index) | Core |
 | `search_memories` | Dual-path retrieval: FTS5 keywords + vector semantics | **Logic** |
-| `recall_context` | One-shot recall (direct hits + causal chains + associations + diffusion) | **Composite** |
+| `recall_context` | One-shot recall (direct hits + perception chains + associations + diffusion) | **Composite** |
 | `get_memory` | Fetch a memory by ID | Core |
 | `list_memories` | Paginated listing | Core |
-| `trace_causal_chain` | BFS causal-chain tracing | **Up/down** |
+| `trace_perception_chain` | BFS perception-chain tracing (6 causal relations) | **Up/down** |
+| `find_perception_path` | Bidirectional BFS: shortest path between two memories | **Relational** |
+| `get_perception_graph_stats` | Perception-graph statistics | **Relational** |
 | `diffuse_memories` | Multi-hop graph diffusion search | **Relational** |
 | `get_memory_tree` | Hierarchical tree structure | Core |
 | `get_related_memories` | Hebbian co-occurrence associations | **Relational** |
@@ -124,15 +148,15 @@ Core tools (13):
 | `reimport_sources` | Re-scan external notes directories | Import |
 | `get_stats` | System statistics | Core |
 
-Plus 19 management tools: `get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md` (Obsidian) / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`.
+Plus 20 management tools: `get_memory` / `list_memories` / `get_memory_tree` / `get_related_memories` / `consolidate_memories` / `share_memory` / `merge_memories` / `batch_delete` / `batch_update` / `export_memories` / `export_memories_md` (Obsidian) / `explain_query` / `get_confidence_stats` / `scan_memory_patterns` / `validate_memory` / `get_top_experiences` / `deduplicate_memories` / `scan_observation_patterns` / `rotate_observation_logs` / `session_mine`.
 
 ## Automatic memory across platforms
 
-Claude Code uses native hooks (100% automatic). Other tools use the `observe_turn` tool + instruction files (see `rules/`):
+Claude Code uses native hooks (100% automatic, zero gaps). Other tools use the `observe_turn` tool + instruction files (see `rules/`):
 
 | Platform | Mechanism | Automation |
 |----------|-----------|------------|
-| **Claude Code** | hooks (native) | 100% automatic |
+| **Claude Code** | hooks (native) | 100% automatic, zero gaps |
 | **Cursor** | `.cursor/rules/` instruction file | Triggered when AI follows instructions |
 | **Codex CLI** | `AGENTS.md` instruction file | Triggered when AI follows instructions |
 | **Trae** | project rules (manual) | Triggered when AI follows instructions |
@@ -169,7 +193,7 @@ It detects installed AI tools (writes only what it finds, never overwrites):
 | Zed | `~/.config/zed/settings.json` → context_servers |
 | VS Code Copilot | `%APPDATA%/Code/User/mcp.json` → servers |
 | Codex CLI | `~/.codex/config.toml` |
-| **pi-coding-agent** | extension generated at `~/.pi/agent/extensions/aifp-memory/` |
+| **pi-coding-agent** | extension generated at `~/.pi/agent/extensions/aifp-memory/` (pi has no built-in MCP, uses the extension mechanism) |
 
 ## Manual configuration
 
@@ -216,7 +240,7 @@ The observation queue needs an LLM to judge whether a turn is worth remembering.
 # OpenAI-compatible (DeepSeek recommended)
 export COGNITION_RECOGNIZER=1
 export COGNITION_LLM_API_KEY=your-deepseek-key
-export COGNITION_LLM_BASE_URL=https://api.deepseek.com   # optional
+export COGNITION_LLM_BASE_URL=https://api.deepseek.com   # optional, default as left
 export COGNITION_LLM_MODEL=deepseek-chat                 # optional
 
 # or Anthropic

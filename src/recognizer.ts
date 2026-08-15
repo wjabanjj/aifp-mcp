@@ -224,6 +224,11 @@ async function handleUpsertMemory(input: { memories?: any[] }): Promise<string> 
         results.push({ mem_id: m.mem_id || 'unknown', action: 'skipped: missing required fields' })
         continue
       }
+      // LLM 兜底过滤：即使 LLM 误判，含代码堆栈/调试噪音的内容也不写入
+      if (isToolNoise(m.content)) {
+        results.push({ mem_id: m.mem_id, action: 'skipped: tool noise' })
+        continue
+      }
 
       const existing = getMemory(m.mem_id)
       if (existing) {
@@ -287,10 +292,23 @@ function _hasFastSignal(text: string): boolean {
 }
 
 function _existsSimilar(text: string): boolean {
-  const kw = text.replace(/[，。！？、；：""''【】\s]/g, '').slice(0, 20)
+  // 保留词边界（空格分隔），只去标点/emoji/符号。合并成连续串会破坏 FTS5 词边界导致查不到。
+  const kw = text.replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 24)
   if (kw.length < 4) return false
-  const hits = searchMemories(kw, { limit: 1 })
-  return hits.length > 0
+  const hits = searchMemories(kw, { limit: 3 })
+  if (!hits.length) return false
+  // 二次校验：命中内容必须与当前文本有足够字符重叠才算重复，
+  // 否则 FTS5 bigram 前缀匹配会把"用户"这类高频词误判为相似（过度拦截）
+  const norm = (s: string) => String(s).replace(/[^\p{L}\p{N}]/gu, '')
+  const cur = norm(text).slice(0, 20)
+  if (cur.length < 4) return false
+  for (const h of hits) {
+    const target = norm(h.content).slice(0, 20)
+    let overlap = 0
+    for (const ch of cur) if (target.includes(ch)) overlap++
+    if (overlap / cur.length >= 0.6) return true
+  }
+  return false
 }
 
 function _fastTrackMemory(text: string): WrittenMemory[] {
@@ -303,6 +321,8 @@ function _fastTrackMemory(text: string): WrittenMemory[] {
   const sents = text.split(/(?<=[。！？!?；;])|\n+/).map(s => s.trim()).filter(Boolean)
   for (const sent of sents) {
     if (!_hasFastSignal(sent)) continue
+    // 逐句再过滤一次工具/调试噪音（整段入口只挡整段，拆句后每句要单独过）
+    if (isToolNoise(sent)) continue
     if (_existsSimilar(sent)) continue
     const dedupKey = sent.slice(0, 40)
     if (seen.has(dedupKey)) continue

@@ -35,7 +35,25 @@ export function validateMemoryContent(content: string): GateResult {
     }
   }
 
-  // 3. 猜测内容拦截
+  // 3. 情绪统计流水账拦截（"本轮出现 N 次低落信号"类——情绪是瞬时状态，
+  //    每次检测的统计数字没有长期价值，只应存最新状态或低频合并的模式洞察）
+  const emotionStatsPatterns = [
+    /情绪集中/,
+    /混合负向情绪/,
+    /(本轮|本次|当前)(出现|检测到|捕获到)\s*\d+/,
+    /\d+\s*条(信号|情绪)/,
+    /高强度负向/,
+    /负向情绪信号/,
+    // 结构宽规则：数字量词 + 情绪词共现（LLM 措辞多变，追词追不完，按结构拦）
+    /[0-9０-９]+\s*(条|轮|次|个).*(情绪|信号|低落|疲劳|焦虑|负向|正向)/,
+  ]
+  for (const p of emotionStatsPatterns) {
+    if (p.test(content)) {
+      return { valid: false, reason: '包含情绪统计流水账，不予保存' }
+    }
+  }
+
+  // 4. 猜测内容拦截
   const speculationPatterns = [
     /我觉得用户(可能|大概|应该|也许)/,
     /用户(可能|大概|应该|也许)(想|要|需要|喜欢)/,

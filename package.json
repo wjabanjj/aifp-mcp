@@ -1,6 +1,6 @@
 {
   "name": "aifp-mcp",
-  "version": "1.5.3",
+  "version": "1.5.6",
   "description": "AiFP Cognitive Memory — persistent memory MCP server for AI assistants. Chinese-first retrieval with causal chains, Hebbian associations and graph diffusion. 记忆感知系统",
   "license": "SEE LICENSE IN LICENSE",
   "type": "module",
