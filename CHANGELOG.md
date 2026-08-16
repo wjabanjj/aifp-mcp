@@ -2,6 +2,13 @@
 
 All notable changes to **aifp-mcp** (AiFP 记忆感知系统).
 
+## [1.5.10] — 2026-08-16
+
+### 📝 文档
+- README 中英调换：中文为主档（GitHub/npm 默认显示中文），英文移至 README.en.md
+- dsh 安装说明修正：`npm install -g aifp-mcp` 后自动接入 dsh（postinstall 自动写 `~/.dsh/cordis.patch.yml`），删掉需猜测 profile 名的 `dsh plugin` 命令
+- cordis.patch.yml 示例统一为与 postinstall 生成一致的 id/serverName（memory-aifp / ai-cognition）
+
 ## [1.5.4] — 2026-08-14
 
 ### 🛡️ 管理面板 & 服务器安全（已部署）
@@ -50,7 +57,3 @@ All notable changes to **aifp-mcp** (AiFP 记忆感知系统).
 - 既有历史版本（29 个历史版本已发布）
 
 > 完整历史版本见 [npm](https://www.npmjs.com/package/aifp-mcp)。
-
-## AiFP 记忆感知系统（aifp-mcp）正式唯一真源在 E:\Down\AiFP记忆感知系统，当前版本 1.5.9。远 [2026-08-15]
-*[2026-08-15]*
-AiFP 记忆感知系统（aifp-mcp）正式唯一真源在 E:\Down\AiFP记忆感知系统，当前版本 1.5.9。远程仓库：GitHub origin（wjabanjj/aifp-mcp）+ Gitee gitee（aifp/aifp-mcp），分支 master。正式发布文案在 README.zh.md（2026-08-15 更新）。
