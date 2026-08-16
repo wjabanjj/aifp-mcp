@@ -50,3 +50,7 @@ All notable changes to **aifp-mcp** (AiFP 记忆感知系统).
 - 既有历史版本（29 个历史版本已发布）
 
 > 完整历史版本见 [npm](https://www.npmjs.com/package/aifp-mcp)。
+
+## AiFP 记忆感知系统（aifp-mcp）正式唯一真源在 E:\Down\AiFP记忆感知系统，当前版本 1.5.9。远 [2026-08-15]
+*[2026-08-15]*
+AiFP 记忆感知系统（aifp-mcp）正式唯一真源在 E:\Down\AiFP记忆感知系统，当前版本 1.5.9。远程仓库：GitHub origin（wjabanjj/aifp-mcp）+ Gitee gitee（aifp/aifp-mcp），分支 master。正式发布文案在 README.zh.md（2026-08-15 更新）。
