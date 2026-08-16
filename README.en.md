@@ -63,15 +63,15 @@ claude mcp add ai-cognition -s user -- npx aifp-mcp
 
 Restart Claude Code and you're done. Data lives in `~/.ai-cognition/data/cognition.db`.
 
-### One-command install for DeepSeek Harness (dsh)
+### Automatic setup for DeepSeek Harness (dsh)
 
-AiFP is an official `dsh-plugin` ecosystem bundle — install it into dsh with a single command:
+Installing `aifp-mcp` **auto-configures dsh** — no dsh command needed:
 
 ```bash
-dsh plugin --profile <your-profile> add aifp-mcp
+npm install -g aifp-mcp
 ```
 
-Restart dsh and all memory tools register automatically as `mcp__aifp__*` (e.g. `mcp__aifp__search_memories`, `mcp__aifp__save_memory`) — no manual config needed.
+The installer detects dsh and writes its config (`~/.dsh/cordis.patch.yml`). Restart dsh and all memory tools register automatically as `mcp__aifp__*` (e.g. `mcp__aifp__search_memories`, `mcp__aifp__save_memory`) — no manual config needed.
 
 ### Install from any AI assistant's chat (recommended)
 
