@@ -341,49 +341,45 @@ function _recencyLabel(ts) {
       }
     }
 
-    // 6a. Causal recursive CTE — backward unlimited (溯源到根源) + forward depth-3
+    // 6a. Causal expansion — 迭代分层，替代递归 CTE
+    // 为什么改（2026-08-19）：原递归 CTE 在 perception_links 5.7万行表上执行计划爆炸，
+    // 曾实测 30s+ 不返回（日志实锤一次 latency 319626ms），导致 Claude Code 5s 超时杀进程。
+    // 迭代式每层 ≤CHAIN_LAYER_LIMIT 节点、≤CHAIN_DEPTH 层，总节点数全程受控有界。
+    // 何时能改回：SQLite 对递归 CTE 的优化（或表拆分区）能保证毫秒级时，可考虑换回。
+    const CHAIN_DEPTH = 3          // 因果链层数上限（原 5，实践上 3 层已覆盖主要关联）
+    const CHAIN_LAYER_LIMIT = 20   // 每层最多新节点数，防指数爆炸
+    function expandCausalChain(initialIds, direction) {
+      // direction: 'backward' = 溯源（target_id ← source_id）；'forward' = 结果（source_id → target_id）
+      const idCol = direction === 'backward' ? 'source_id' : 'target_id'
+      const matchCol = direction === 'backward' ? 'target_id' : 'source_id'
+      const collected = new Set()
+      let frontier = [...initialIds]
+      for (let depth = 0; depth < CHAIN_DEPTH; depth++) {
+        if (frontier.length === 0) break
+        const ph = frontier.map(() => '?').join(',')
+        let layerRows = []
+        try {
+          layerRows = db.prepare(`
+            SELECT DISTINCT ${idCol} AS id FROM perception_links
+            WHERE ${matchCol} IN (${ph})
+            LIMIT ?
+          `).all(...frontier, CHAIN_LAYER_LIMIT)
+        } catch { break }
+        const next = []
+        for (const r of layerRows) {
+          const key = String(r.id)
+          if (!seenExpanded.has(key) && !collected.has(key)) {
+            collected.add(key)
+            next.push(r.id)
+          }
+        }
+        frontier = next
+      }
+      fetchMemoriesByIds([...collected], () => direction === 'backward' ? '原因链溯源' : '结果链延伸')
+    }
     try {
-      // Backward: trace to root cause via source_id ← target_id (depth = 5，超过 5 层的因果链实践上已无关联意义)
-      const backwardIds = new Set()
-      for (const id of initialIds) {
-        if (backwardIds.size >= MAX_EXPAND_IDS) break
-        try {
-          const rows = db.prepare(`
-            WITH RECURSIVE chain(id, depth) AS (
-              SELECT ?, 0
-              UNION ALL
-              SELECT source_id, depth + 1 FROM perception_links, chain
-              WHERE perception_links.target_id = chain.id AND depth < 5
-            )
-            SELECT id FROM chain WHERE depth > 0
-          `).all(id)
-          for (const r of rows) {
-            if (!seenExpanded.has(String(r.id))) backwardIds.add(String(r.id))
-          }
-        } catch {}
-      }
-      fetchMemoriesByIds([...backwardIds], () => '原因链溯源')
-
-      // Forward: trace to effects via source_id → target_id (depth = 5)
-      const forwardIds = new Set()
-      for (const id of initialIds) {
-        if (forwardIds.size >= MAX_EXPAND_IDS) break
-        try {
-          const rows = db.prepare(`
-            WITH RECURSIVE chain(id, depth) AS (
-              SELECT ?, 0
-              UNION ALL
-              SELECT target_id, depth + 1 FROM perception_links, chain
-              WHERE perception_links.source_id = chain.id AND depth < 5
-            )
-            SELECT id FROM chain WHERE depth > 0
-          `).all(id)
-          for (const r of rows) {
-            if (!seenExpanded.has(String(r.id))) forwardIds.add(String(r.id))
-          }
-        } catch {}
-      }
-      fetchMemoriesByIds([...forwardIds], () => '结果链延伸')
+      expandCausalChain(initialIds, 'backward')
+      expandCausalChain(initialIds, 'forward')
     } catch { /* causal expansion failed — non-critical */ }
 
     // 6b. Hebbian associations: for each initial result, get associated memories
@@ -393,6 +389,7 @@ function _recencyLabel(ts) {
           SELECT mem_b AS linked_id FROM memory_associations WHERE mem_a = ?
           UNION
           SELECT mem_a AS linked_id FROM memory_associations WHERE mem_b = ?
+          LIMIT 10
         `).all(id, id)
         const ids = assocNeighbors.map(r => r.linked_id).filter(id => !seenExpanded.has(id))
         fetchMemoriesByIds(ids, () => 'Hebbian 共现关联')

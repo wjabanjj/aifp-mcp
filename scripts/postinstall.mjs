@@ -37,7 +37,7 @@ try {
 
 const HOOKS = [
   { src: 'check-status.mjs', dst: 'check-aifp-status.mjs', event: 'SessionStart', matcher: 'startup', timeout: 10 },
-  { src: 'recall-hook.mjs', dst: 'recall-aifp-memory.mjs', event: 'UserPromptSubmit', matcher: undefined, timeout: 5 },
+  { src: 'recall-hook.mjs', dst: 'recall-aifp-memory.mjs', event: 'UserPromptSubmit', matcher: undefined, timeout: 15 },
 ]
 
 try {

@@ -1,8 +1,10 @@
 // @deploy npm — 客户端模块，随 npm 分发到用户本地
 /**
  * 记忆质量门禁 — 纯规则引擎
- * 三重过滤：长度 / 瞬态信息 / 猜测内容
+ * 四重过滤：长度 / 瞬态信息 / 猜测内容 / 工具噪音
  */
+
+import { isToolNoise } from './guard.js'
 
 // ── 质量门禁 ──
 
@@ -12,8 +14,15 @@ export interface GateResult {
 }
 
 /**
- * 三重质量门禁。通过返回 { valid: true }，拒绝返回具体原因。
+ * 质量门禁。通过返回 { valid: true }，拒绝返回具体原因。
  * 与 aifp-web heuristic.ts 的 validateMemoryContent 规则一致。
+ *
+ * 2026-08-19 新增第 5 道门禁：工具/调试噪音（复用 guard.ts 的 isToolNoise）。
+ * 为什么改：save_memory 直通路径（mcp.ts）此前只走本门禁、不查 isToolNoise，
+ * 导致「| autoCompactConversation | auto-compact.ts:110 | 保留 |」这类管道符调试段、
+ * 代码堆栈、后台命令通知被存进长期记忆（曾一次写入 10+ 条，污染 hook 召回）。
+ * 何时能改回：确认所有写入路径（save_memory / observe_turn / recognizer）都统一
+ * 走守卫且噪音条目已清理后，可评估是否精简。
  */
 export function validateMemoryContent(content: string): GateResult {
   // 1. 空内容门禁
@@ -21,7 +30,12 @@ export function validateMemoryContent(content: string): GateResult {
     return { valid: false, reason: '内容不能为空' }
   }
 
-  // 2. 瞬态信息拦截
+  // 2. 工具/调试噪音拦截（管道符调试段、代码堆栈、后台命令通知、exit code 等）
+  if (isToolNoise(content)) {
+    return { valid: false, reason: '工具/调试噪音，不予保存' }
+  }
+
+  // 3. 瞬态信息拦截
   const transientPatterns = [
     /当前(正在|在|的)(页面|标签|窗口|界面|会话|对话)/,
     /正在(查看|编辑|打开|浏览|处理)/,
@@ -35,7 +49,7 @@ export function validateMemoryContent(content: string): GateResult {
     }
   }
 
-  // 3. 情绪统计流水账拦截（"本轮出现 N 次低落信号"类——情绪是瞬时状态，
+  // 4. 情绪统计流水账拦截（"本轮出现 N 次低落信号"类——情绪是瞬时状态，
   //    每次检测的统计数字没有长期价值，只应存最新状态或低频合并的模式洞察）
   const emotionStatsPatterns = [
     /情绪集中/,
@@ -53,7 +67,7 @@ export function validateMemoryContent(content: string): GateResult {
     }
   }
 
-  // 4. 猜测内容拦截
+  // 5. 猜测内容拦截
   const speculationPatterns = [
     /我觉得用户(可能|大概|应该|也许)/,
     /用户(可能|大概|应该|也许)(想|要|需要|喜欢)/,

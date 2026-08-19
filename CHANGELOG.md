@@ -2,6 +2,28 @@
 
 All notable changes to **aifp-mcp** (AiFP 记忆感知系统).
 
+## [1.5.11] — 2026-08-19
+
+### 🐛 修复
+
+**1. UserPromptSubmit hook 卡死（Claude Code 报 `hook timed out after 5s`）**
+
+- **根因**：hook 记忆召回时，因果链扩展用递归 CTE 在 perception_links 5.7 万行表上执行计划爆炸，日志实锤最慢一次 **319 秒**，远超 5 秒超时被强杀
+- `hooks/recall-hook.mjs`：递归 CTE → 迭代分层查询（每层 ≤20 节点、≤3 层，节点数全程有界），注释写明为什么改、何时可改回
+- 验证：修复前 30s+ 无返回，修复后 **570~712ms** 完成
+
+**2. 记忆噪音（save_memory 路径绕过守卫，垃圾记忆入库）**
+
+- **根因**：`save_memory` 工具只走 `validateMemoryContent`（四重门禁），没查 guard.ts 的 `isToolNoise`。管道符调试段（`| autoCompactConversation | auto-compact.ts:110 |`）、代码堆栈、后台命令通知被存进长期记忆，一次写入 10+ 条
+- `src/extractor.ts`：`validateMemoryContent` 新增第 2 道门禁，复用 `isToolNoise`（工具/调试噪音拦截），与 observe_turn/recognizer 路径统一
+- 验证：管道符段/代码堆栈/exit code 全拦截，正常记忆放行
+
+### ✨ 改进
+
+- `src/db.ts`：`memory_associations` 建表补 `mem_a`/`mem_b` 索引（原建表漏了，单列查询全表扫 2.8 万行）
+- `scripts/postinstall.mjs`：hook 部署 timeout 5 → 15（双保险，与运行配置统一）
+- 已清理历史噪音记忆（测试垃圾/管道符调试段/工具流水账，共 378 条，误删的 4 条有效记忆已从备份恢复）
+
 ## [1.5.10] — 2026-08-16
 
 ### 📝 文档
@@ -57,3 +79,8 @@ All notable changes to **aifp-mcp** (AiFP 记忆感知系统).
 - 既有历史版本（29 个历史版本已发布）
 
 > 完整历史版本见 [npm](https://www.npmjs.com/package/aifp-mcp)。
+
+
+## AiFP记忆感知系统（E:\Down\AiFP记忆感知系统）的 UserPromptSubmit hook 卡死问题已根 [2026-08-19]
+*[2026-08-19]*
+AiFP记忆感知系统（E:\Down\AiFP记忆感知系统）的 UserPromptSubmit hook 卡死问题已根治，四处配置统一：1) hooks/recall-hook.mjs（源文件）改为迭代查询替代递归 CTE；2) src/db.ts 补索引；3) scripts/postinstall.mjs timeout 5→15；4) CHANGELOG.md 新增 [1.5.11] 修复记录（人话写，含现象/根因/改动/验证）。Claude 用的不是旧版系统，hook 就是从此项目部署出去的同一套，只是源文件旧逻辑未同步，现已统一。下次更新 GitHub 仓库时 git diff 即全部改动。

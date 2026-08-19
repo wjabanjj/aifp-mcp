@@ -89,6 +89,10 @@ function initSchema(db: DatabaseSync): void {
       strength REAL NOT NULL DEFAULT 0,
       PRIMARY KEY (user_id, mem_a, mem_b)
     );
+    -- 2026-08-19 补：hook 按 mem_a/mem_b 单列查询（Hebbian 共现召回），无索引时全表扫 2.8 万行。
+    -- 原建表只建了 (user_id, mem_a, mem_b) 联合主键，单列查询用不上前缀索引。
+    CREATE INDEX IF NOT EXISTS idx_assoc_mem_a ON memory_associations(mem_a);
+    CREATE INDEX IF NOT EXISTS idx_assoc_mem_b ON memory_associations(mem_b);
 
     CREATE TABLE IF NOT EXISTS _meta (
       key TEXT PRIMARY KEY,
